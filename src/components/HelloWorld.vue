@@ -1,5 +1,7 @@
 <template>
   <div class="hello">
+    <button @click="connectWallet('metamask')">Connect Me</button>
+    <h1>{{ account }}</h1>
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
@@ -33,12 +35,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, watch } from 'vue';
+import useWeb3 from '@/services/web3/useWeb3';
 
 export default defineComponent({
   name: 'HelloWorld',
   props: {
     msg: String,
+  },
+  setup() {
+    const { connectWallet, account, chainId } = useWeb3()
+    watch(account, (newAccount) => {
+      console.log('changed account', newAccount)
+      console.log('chainId', chainId.value)
+    })
+    return {
+      connectWallet,
+      account
+    }
   },
 });
 </script>
