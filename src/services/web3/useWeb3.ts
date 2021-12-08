@@ -1,11 +1,8 @@
 import { computed, inject, reactive, ref, watch } from 'vue';
-// import { useQuery } from 'vue-query';
 import { Web3Plugin, Web3ProviderSymbol } from './web3.plugin';
 import { Web3Provider } from '@ethersproject/providers';
-// import QUERY_KEYS from '@/constants/queryKeys';
 import { configService } from '../config/config.service';
 import { isAddress } from '@ethersproject/address';
-import { web3Service } from './web3.service';
 import { rpcProviderService } from '../rpc-provider/rpc-provider.service';
 import { switchToAppNetwork } from './utils/helpers';
 import useNetwork, { Network } from '@/composables/useNetwork';
@@ -64,10 +61,6 @@ export default function useWeb3() {
   const isEIP1559SupportedNetwork = computed(
     () => appNetworkConfig.supportsEIP1559
   );
-
-  const canLoadProfile = computed(
-    () => account.value !== '' && userNetworkConfig.value !== null
-  );
   const isMismatchedNetwork = computed(() => {
     return (
       isWalletReady.value &&
@@ -98,14 +91,6 @@ export default function useWeb3() {
     isWalletSelectVisible.value = !isWalletSelectVisible.value;
   };
 
-  // const { isLoading: isLoadingProfile, data: profile } = useQuery(
-  //   QUERY_KEYS.Account.Profile(networkId, account, chainId),
-  //   () => web3Service.getProfile(account.value),
-  //   reactive({
-  //     enabled: canLoadProfile
-  //   })
-  // );
-
   // WATCHERS
   watch(account, () => {
     // if the account ref has changed, we know that
@@ -117,13 +102,11 @@ export default function useWeb3() {
     // refs
     account,
     chainId,
-    // profile,
     connector,
     provider,
     walletState,
     userNetworkConfig,
     appNetworkConfig,
-    // isLoadingProfile,
     isWalletReady,
     isWalletSelectVisible,
     isMismatchedNetwork,

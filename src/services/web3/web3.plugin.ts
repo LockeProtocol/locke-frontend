@@ -10,8 +10,8 @@ import {
   Web3Provider
 } from '@ethersproject/providers';
 import { GnosisSafeConnector } from './connectors/gnosis/gnosis.connector';
-import { WalletLinkConnector } from './connectors/walletlink/walletlink.connector';
-import { PortisConnector } from './connectors/portis/portis.connector';
+//import { WalletLinkConnector } from './connectors/walletlink/walletlink.connector';
+//import { PortisConnector } from './connectors/portis/portis.connector';
 // import useFathom from '@/composables/useFathom';
 
 import defaultLogo from '@/assets/images/connectors/default.svg';
@@ -31,21 +31,21 @@ export type Wallet =
   | 'metamask'
   | 'walletconnect'
   | 'gnosis'
-  | 'walletlink'
-  | 'portis';
+//  | 'walletlink'
+//  | 'portis';
 export const SupportedWallets = [
   'metamask',
   'walletconnect',
   'gnosis',
-  'walletlink',
-  'portis'
+//  'walletlink',
+//  'portis'
 ] as Wallet[];
 export const WalletNameMap: Record<Wallet, string> = {
   metamask: 'Metamask',
   walletconnect: 'WalletConnect',
   gnosis: 'Gnosis Safe',
-  walletlink: 'Coinbase',
-  portis: 'Portis'
+// walletlink: 'Coinbase',
+//  portis: 'Portis'
 };
 type ConnectorImplementation = new (...args: any[]) => Connector;
 export const Web3ProviderSymbol = Symbol('WEB3_PROVIDER');
@@ -65,8 +65,8 @@ const WalletConnectorDictionary: Record<Wallet, ConnectorImplementation> = {
   metamask: MetamaskConnector,
   walletconnect: WalletConnectConnector,
   gnosis: GnosisSafeConnector,
-  walletlink: WalletLinkConnector,
-  portis: PortisConnector
+//  walletlink: WalletLinkConnector,
+//  portis: PortisConnector
 };
 
 type WalletState = 'connecting' | 'connected' | 'disconnected';
@@ -85,7 +85,6 @@ const i18n = {
 
 export default {
   install: async app => {
-    // const { trackGoal, Goals } = useFathom();
     const alreadyConnectedAccount = ref(lsGet('connectedWallet', null));
     const alreadyConnectedProvider = ref(lsGet('connectedProvider', null));
     // this data provided is properly typed to all consumers
@@ -149,8 +148,6 @@ export default {
           lsSet('connectedWallet', account.value);
           lsSet('connectedProvider', wallet);
           pluginState.walletState = 'connected';
-
-          // trackGoal(Goals.ConnectedWallet);
         }
       } catch (err) {
         console.error(err);
@@ -193,7 +190,7 @@ export default {
 
 export function getConnectorName(connectorId: string): string {
   if (connectorId === 'injected') {
-    const provider = window.ethereum as any;
+    const provider = (window as any).ethereum as any;
     if (provider.isMetaMask) {
       return 'MetaMask';
     }
@@ -231,7 +228,7 @@ export function getConnectorName(connectorId: string): string {
 
 export function getConnectorLogo(connectorId: string): string {
   if (connectorId === 'injected') {
-    const provider = window.ethereum as any;
+    const provider = (window as any).ethereum as any;
     if (provider.isMetaMask) {
       return metamaskLogo;
     }
