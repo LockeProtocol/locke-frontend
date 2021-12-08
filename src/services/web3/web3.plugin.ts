@@ -10,42 +10,21 @@ import {
   Web3Provider
 } from '@ethersproject/providers';
 import { GnosisSafeConnector } from './connectors/gnosis/gnosis.connector';
-//import { WalletLinkConnector } from './connectors/walletlink/walletlink.connector';
-//import { PortisConnector } from './connectors/portis/portis.connector';
-// import useFathom from '@/composables/useFathom';
-
-import defaultLogo from '@/assets/images/connectors/default.svg';
-import fortmaticLogo from '@/assets/images/connectors/fortmatic.svg';
-import frameLogo from '@/assets/images/connectors/frame.svg';
-import imtokenLogo from '@/assets/images/connectors/imtoken.svg';
-import metamaskLogo from '@/assets/images/connectors/metamask.svg';
-import portisLogo from '@/assets/images/connectors/portis.svg';
-import statusLogo from '@/assets/images/connectors/status.svg';
-import trustwalletLogo from '@/assets/images/connectors/trustwallet.svg';
-import walletconnectLogo from '@/assets/images/connectors/walletconnect.svg';
-import walletlinkLogo from '@/assets/images/connectors/walletlink.svg';
 // import i18n from '@/plugins/i18n';
-import { rpcProviderService } from '../rpc-provider/rpc-provider.service';
 
 export type Wallet =
   | 'metamask'
   | 'walletconnect'
   | 'gnosis'
-//  | 'walletlink'
-//  | 'portis';
 export const SupportedWallets = [
   'metamask',
   'walletconnect',
   'gnosis',
-//  'walletlink',
-//  'portis'
 ] as Wallet[];
 export const WalletNameMap: Record<Wallet, string> = {
   metamask: 'Metamask',
   walletconnect: 'WalletConnect',
   gnosis: 'Gnosis Safe',
-// walletlink: 'Coinbase',
-//  portis: 'Portis'
 };
 type ConnectorImplementation = new (...args: any[]) => Connector;
 export const Web3ProviderSymbol = Symbol('WEB3_PROVIDER');
@@ -65,8 +44,6 @@ const WalletConnectorDictionary: Record<Wallet, ConnectorImplementation> = {
   metamask: MetamaskConnector,
   walletconnect: WalletConnectConnector,
   gnosis: GnosisSafeConnector,
-//  walletlink: WalletLinkConnector,
-//  portis: PortisConnector
 };
 
 type WalletState = 'connecting' | 'connected' | 'disconnected';
@@ -108,8 +85,7 @@ export default {
 
     const provider = computed(
       () =>
-        pluginState.connector?.provider ??
-        rpcProviderService.getJsonProvider(chainId.value)
+        pluginState.connector?.provider
     );
     const signer = computed(() => pluginState.connector?.provider?.getSigner());
 
@@ -187,76 +163,3 @@ export default {
     app.provide(Web3ProviderSymbol, payload);
   }
 };
-
-export function getConnectorName(connectorId: string): string {
-  if (connectorId === 'injected') {
-    const provider = (window as any).ethereum as any;
-    if (provider.isMetaMask) {
-      return 'MetaMask';
-    }
-    if (provider.isImToken) {
-      return 'imToken';
-    }
-    if (provider.isStatus) {
-      return 'Status';
-    }
-    if (provider.isTrust) {
-      return 'Trust Wallet';
-    }
-    if (provider.isFrame) {
-      return 'Frame';
-    }
-    return i18n.global.t('browserWallet');
-  }
-  if (connectorId === 'fortmatic') {
-    return 'Fortmatic';
-  }
-  if (connectorId === 'portis') {
-    return 'Portis';
-  }
-  if (connectorId === 'walletconnect') {
-    return 'WalletConnect';
-  }
-  if (connectorId === 'walletlink') {
-    return `Coinbase ${i18n.global.t('wallet')}`;
-  }
-  if (connectorId === 'gnosis') {
-    return 'Gnosis Safe';
-  }
-  return i18n.global.t('unknown');
-}
-
-export function getConnectorLogo(connectorId: string): string {
-  if (connectorId === 'injected') {
-    const provider = (window as any).ethereum as any;
-    if (provider.isMetaMask) {
-      return metamaskLogo;
-    }
-    if (provider.isImToken) {
-      return imtokenLogo;
-    }
-    if (provider.isStatus) {
-      return statusLogo;
-    }
-    if (provider.isTrust) {
-      return trustwalletLogo;
-    }
-    if (provider.isFrame) {
-      return frameLogo;
-    }
-    return defaultLogo;
-  }
-  if (connectorId === 'fortmatic') {
-    return fortmaticLogo;
-  }
-  if (connectorId === 'portis') {
-    return portisLogo;
-  }
-  if (connectorId === 'walletconnect') {
-    return walletconnectLogo;
-  }
-  if (connectorId === 'walletlink') {
-    return walletlinkLogo;
-  }
-  return defaultLogo;
-}

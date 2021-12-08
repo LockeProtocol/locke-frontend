@@ -1,22 +1,9 @@
 import { computed, inject, ref, watch } from 'vue';
 import { Web3Plugin, Web3ProviderSymbol } from './web3.plugin';
 import { Web3Provider } from '@ethersproject/providers';
-import { configService } from '../config/config.service';
-import { rpcProviderService } from '../rpc-provider/rpc-provider.service';
-import { switchToAppNetwork } from './utils/helpers';
-import { Network } from '@/composables/useNetwork';
 
 /** STATE */
-const blockNumber = ref(0);
 const isWalletSelectVisible = ref(false);
-
-/** MUTATIONS */
-function setBlockNumber(n: number): void {
-  blockNumber.value = n;
-}
-
-/** INIT STATE */
-rpcProviderService.initBlockListener(setBlockNumber);
 
 export default function useWeb3() {
   const {
@@ -29,46 +16,13 @@ export default function useWeb3() {
     disconnectWallet,
     connectWallet
   } = inject(Web3ProviderSymbol) as Web3Plugin;
-  const appNetworkConfig = configService.network;
 
   // COMPUTED REFS + COMPUTED REFS
-  const userNetworkConfig = computed(() => {
-    try {
-      if (chainId.value) return configService.getNetworkConfig(chainId.value);
-      return null;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  });
   const isWalletReady = computed(() => walletState.value === 'connected');
-  const isMainnet = computed(() => appNetworkConfig.chainId === Network.MAINNET);
-  const isKovan = computed(() => appNetworkConfig.chainId === Network.KOVAN);
-  const isPolygon = computed( () => appNetworkConfig.chainId === Network.POLYGON);
-  const isArbitrum = computed( () => appNetworkConfig.chainId === Network.ARBITRUM);
-  const isEIP1559SupportedNetwork = computed(() => appNetworkConfig.supportsEIP1559);
-  const isMismatchedNetwork = computed(() => {
-    return (
-      isWalletReady.value &&
-      userNetworkConfig.value?.key !== appNetworkConfig.key
-    );
-  });
-  const isUnsupportedNetwork = computed(() => {
-    return isWalletReady.value && userNetworkConfig.value === null;
-  });
-  const explorerLinks = {
-    txLink: (txHash: string) =>
-      `${configService.network.explorer}/tx/${txHash}`,
-    addressLink: (address: string) =>
-      `${configService.network.explorer}/address/${address}`,
-    tokenLink: (address: string) =>
-      `${configService.network.explorer}/token/${address}`
-  };
 
   // METHODS
   const getProvider = () => new Web3Provider(provider.value as any);
   const getSigner = () => getProvider().getSigner();
-  const connectToAppNetwork = () => switchToAppNetwork(provider.value as any);
   const toggleWalletSelectModal = (value: boolean) => {
     if (value !== undefined && typeof value === 'boolean') {
       isWalletSelectVisible.value = value;
@@ -91,28 +45,15 @@ export default function useWeb3() {
     connector,
     provider,
     walletState,
-    userNetworkConfig,
-    appNetworkConfig,
     isWalletReady,
     isWalletSelectVisible,
-    isMismatchedNetwork,
-    isUnsupportedNetwork,
-    explorerLinks,
     signer,
-    blockNumber,
-    isMainnet,
-    isKovan,
-    isPolygon,
-    isArbitrum,
-    isEIP1559SupportedNetwork,
 
     // methods
     connectWallet,
-    connectToAppNetwork,
     getProvider,
     getSigner,
     disconnectWallet,
     toggleWalletSelectModal,
-    setBlockNumber
   };
 }

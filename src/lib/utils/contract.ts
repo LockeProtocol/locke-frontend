@@ -2,7 +2,8 @@ import set from 'lodash/set';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { Interface } from '@ethersproject/abi';
-import configs from '@/lib/config';
+
+const MULTICALL_ADDRESS: string = "0x0000000000000000000000000000000000000000"
 
 export async function call(provider, abi: any[], call: any[], options?) {
   const contract = new Contract(call[0], abi, provider);
@@ -23,7 +24,7 @@ export async function multicall<T>(
   requireSuccess = false
 ): Promise<(T | null)[]> {
   const multi = new Contract(
-    configs[network].addresses.multicall,
+    MULTICALL_ADDRESS,
     [
       'function tryAggregate(bool requireSuccess, tuple(address, bytes)[] memory calls) public view returns (tuple(bool, bytes)[] memory returnData)'
     ],

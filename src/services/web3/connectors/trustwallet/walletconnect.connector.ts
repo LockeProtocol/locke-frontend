@@ -1,15 +1,16 @@
 import { Connector } from '../connector';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import ConfigService from '@/services/config/config.service';
 import { MetamaskError } from '@/types';
+
+const NETWORK_ID = 1;
+const RPC_URL = "";
 
 export class WalletConnectConnector extends Connector {
   id = 'walletconnect';
   async connect() {
-    const configService = new ConfigService();
     const provider = new WalletConnectProvider({
       rpc: {
-        [configService.env.NETWORK]: configService.rpc
+        [NETWORK_ID]: RPC_URL
       }
     });
     this.provider = provider;
