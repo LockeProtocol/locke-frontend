@@ -16,7 +16,7 @@ export default class ConfigService {
     return {
       APP_ENV: process.env.VUE_APP_ENV || 'development',
       NETWORK: networkId.value,
-      APP_DOMAIN: process.env.VUE_APP_DOMAIN || 'app.balancer.fi',
+      APP_DOMAIN: process.env.VUE_APP_DOMAIN || 'app.locke.fi',
       ALCHEMY_KEY:
         process.env.VUE_APP_ALCHEMY_KEY ||
         this.getNetworkConfig(networkId.value).keys.alchemy ||

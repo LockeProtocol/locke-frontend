@@ -1,11 +1,10 @@
-import { computed, inject, reactive, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { Web3Plugin, Web3ProviderSymbol } from './web3.plugin';
 import { Web3Provider } from '@ethersproject/providers';
 import { configService } from '../config/config.service';
-import { isAddress } from '@ethersproject/address';
 import { rpcProviderService } from '../rpc-provider/rpc-provider.service';
 import { switchToAppNetwork } from './utils/helpers';
-import useNetwork, { Network } from '@/composables/useNetwork';
+import { Network } from '@/composables/useNetwork';
 
 /** STATE */
 const blockNumber = ref(0);
@@ -31,11 +30,6 @@ export default function useWeb3() {
     connectWallet
   } = inject(Web3ProviderSymbol) as Web3Plugin;
   const appNetworkConfig = configService.network;
-  const isV1Supported = isAddress(
-    configService.network.addresses.exchangeProxy
-  );
-
-  const { networkId } = useNetwork();
 
   // COMPUTED REFS + COMPUTED REFS
   const userNetworkConfig = computed(() => {
@@ -48,19 +42,11 @@ export default function useWeb3() {
     }
   });
   const isWalletReady = computed(() => walletState.value === 'connected');
-  const isMainnet = computed(
-    () => appNetworkConfig.chainId === Network.MAINNET
-  );
+  const isMainnet = computed(() => appNetworkConfig.chainId === Network.MAINNET);
   const isKovan = computed(() => appNetworkConfig.chainId === Network.KOVAN);
-  const isPolygon = computed(
-    () => appNetworkConfig.chainId === Network.POLYGON
-  );
-  const isArbitrum = computed(
-    () => appNetworkConfig.chainId === Network.ARBITRUM
-  );
-  const isEIP1559SupportedNetwork = computed(
-    () => appNetworkConfig.supportsEIP1559
-  );
+  const isPolygon = computed( () => appNetworkConfig.chainId === Network.POLYGON);
+  const isArbitrum = computed( () => appNetworkConfig.chainId === Network.ARBITRUM);
+  const isEIP1559SupportedNetwork = computed(() => appNetworkConfig.supportsEIP1559);
   const isMismatchedNetwork = computed(() => {
     return (
       isWalletReady.value &&
@@ -114,7 +100,6 @@ export default function useWeb3() {
     explorerLinks,
     signer,
     blockNumber,
-    isV1Supported,
     isMainnet,
     isKovan,
     isPolygon,
