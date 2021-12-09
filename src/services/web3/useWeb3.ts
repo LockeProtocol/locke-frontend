@@ -1,6 +1,7 @@
 import { computed, inject, ref, watch } from 'vue';
 import { Web3Plugin, Web3ProviderSymbol } from './web3.plugin';
 import { Web3Provider } from '@ethersproject/providers';
+import { Contract } from '@ethersproject/contracts';
 
 /** STATE */
 const isWalletSelectVisible = ref(false);
@@ -30,6 +31,15 @@ export default function useWeb3() {
     }
     isWalletSelectVisible.value = !isWalletSelectVisible.value;
   };
+  const call = async (abi: any[], call: any[], options?) => {
+    const contract = new Contract(call[0], abi, getProvider());
+    try {
+      const params = call[2] || [];
+      return await contract[call[1]](...params, options || {});
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
 
   // WATCHERS
   watch(account, () => {
@@ -55,5 +65,6 @@ export default function useWeb3() {
     getSigner,
     disconnectWallet,
     toggleWalletSelectModal,
+    call
   };
 }
