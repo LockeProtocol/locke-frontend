@@ -1,34 +1,38 @@
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import erc20 from '@/lib/abi/erc20-abi.json'
 
-export default function useTokenData(token: string) {
+export default function useTokenData() {
 
-    const { account, call } = useWeb3()
-    const state = reactive({
-        loaded: false,
+    const { call } = useWeb3()
+    const data = reactive({
+        balance: undefined,
         decimals: undefined,
         symbol: null,
-        balance: undefined,
-        name: null,
+        name: null
     })
+    const loaded = ref(false)
 
-    async function fetchData() {
-        state.loaded = false;
+    async function load(token: string) {
+        loaded.value = false;
+        if (!token) return;
 
         let results = await Promise.all([
-            call(erc20, [token, 'balanceOf', [account.value]]),
             call(erc20, [token, 'decimals']),
             call(erc20, [token, 'symbol']),
             call(erc20, [token, 'name']),
         ])
-        state.balance = results[0]
-        state.decimals = results[1]
-        state.symbol = results[2] 
-        state.name = results[3]
-        state.loaded = true
+
+        data.decimals = results[0],
+        data.symbol = results[1],
+        data.name = results[2]
+        
+        loaded.value = true
     }
 
-    fetchData()
-    return state;
+    return {
+        data,
+        loaded,
+        load
+    }
 }

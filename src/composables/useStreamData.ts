@@ -1,27 +1,30 @@
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 
-export default function useStreamData(address: string) {
+export default function useStreamData() {
 
     const { call } = useWeb3()
-    const state = reactive({
-        loaded: false,
-        rewardToken: '',
-        depositToken: '',
+    const data = reactive({
+        rewardToken: null,
+        depositToken: null
     })
+    const loaded = ref(false)
 
-    async function fetchData() {
-        state.loaded = false;
+    async function load(address: string) {
+        loaded.value = false;
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
             call(streamABI, [address, 'depositToken']),
         ])
 
-        state.rewardToken = results[0]
-        state.depositToken = results[1]
-        state.loaded = true
+        data.rewardToken = results[0],
+        data.depositToken = results[1]
+        loaded.value = true
     }
-    fetchData();
-    return state;
+    return {
+        data,
+        loaded,
+        load
+    }
 }
