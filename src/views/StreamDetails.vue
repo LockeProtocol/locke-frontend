@@ -15,14 +15,14 @@ watchEffect(() => connected.value && loadStream('0xF563BF6f68b8657165259a365c8c2
         <div v-if="connected">
             <p>Account: {{ account }}</p>
             <div>
-                <p>Reward Token: {{ stream.rewardToken?.address }}</p>
-                <p>Decimals: {{ stream.depositToken?.decimals }}</p>
-                <p>Symbol: {{ stream.depositToken?.symbol }}</p>
-                <p>Name: {{ stream.depositToken?.name }}</p>
-                <p>Deposit Token: {{ stream.depositToken?.address }}</p>
-                <p>Decimals: {{ stream.rewardToken?.decimals }}</p>
-                <p>Symbol: {{ stream.rewardToken?.symbol }}</p>
-                <p>Name: {{ stream.rewardToken?.name }}</p>
+                <p>Reward Token: {{ stream.rewardToken.address }}</p>
+                <p>Decimals: {{ stream.depositToken.decimals }}</p>
+                <p>Symbol: {{ stream.depositToken.symbol }}</p>
+                <p>Name: {{ stream.depositToken.name }}</p>
+                <p>Deposit Token: {{ stream.depositToken.address }}</p>
+                <p>Decimals: {{ stream.rewardToken.decimals }}</p>
+                <p>Symbol: {{ stream.rewardToken.symbol }}</p>
+                <p>Name: {{ stream.rewardToken.name }}</p>
             </div>
         </div>
         <div v-else>

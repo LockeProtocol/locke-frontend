@@ -7,8 +7,11 @@ export default function useStreamData() {
 
     const { call } = useWeb3()
     const data = reactive({
-        rewardToken: null as any,
-        depositToken: null as any
+        rewardToken: {} as any,
+        depositToken: {} as any,
+        streamParams: {} as any,
+        feeParams: {} as any,
+        tokenAmounts: {} as any
     })
     const loaded = ref(false)
 
@@ -17,13 +20,36 @@ export default function useStreamData() {
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
             call(streamABI, [address, 'depositToken']),
+            call(streamABI, [address, 'streamParams']),
+            call(streamABI, [address, 'feeParams']),
+            call(streamABI, [address, 'tokenAmounts'])
         ])
+
+        data.streamParams
+
         let tokens = await Promise.all([
             getToken(results[0]),
             getToken(results[1])
         ])
+
         data.rewardToken = tokens[0],
-        data.depositToken = tokens[1]
+        data.depositToken = tokens[1],
+        data.streamParams = {
+            startTime: results[2][0],
+            streamDuration: results[2][1],
+            depositLockDuration: results[2][2],
+            rewardLockDuration: results[2][3]
+        }
+        data.feeParams = {
+            feePercent: results[3][0],
+            feeEnabled: results[3][1]
+        }
+        data.tokenAmounts = {
+            rewardTokenAmount: results[4][0],
+            depositTokenAmount: results[4][1],
+            rewardTokenFeeAmount: results[4][2],
+            depositTokenFeeAmount: results[4][3]
+        }
         loaded.value = true
     }
 
