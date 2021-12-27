@@ -1,0 +1,116 @@
+<script setup>
+import { computed, watchEffect, ref } from 'vue'
+import useWeb3 from '@/services/web3/useWeb3'
+import useStreamData from '@/composables/useStreamData'
+import { DateTime } from 'luxon'
+import Deposit from '@/components/Deposit.vue'
+
+const { account, chainId } = useWeb3()
+const connected = computed(() => !!account.value && chainId.value == 99)
+const { data: stream, load: loadStream, loaded } = useStreamData('0xfdb15336C15b995d2709381494CFEf9A149FE146')
+
+// Helpers
+
+function formatDate(unixTimestamp) {
+    return DateTime.fromSeconds(unixTimestamp)
+        .toLocaleString(DateTime.DATETIME_SHORT)
+}
+
+// Refs
+
+const depositTabActive = ref(true)
+
+// Computed
+
+const streamStart = computed(() => formatDate(stream.streamParams.startTime))
+const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stream.streamParams.streamDuration))
+const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
+
+// Effects
+
+watchEffect(() => connected.value && loadStream())
+
+</script>
+
+<template>
+    <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg"  v-if="loaded">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+            <div class="flex flex-col">
+                <h2>{{stream.depositToken.symbol}} / {{stream.rewardToken.symbol}}</h2>
+                <p class="mb-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore. Laoreet torquent tincidunt sollicitudin pretium non ultrices diam arcu semper purus, est cursus morbi.</p>
+                <div class="roundedBox py-4">
+                <div class="grid grid-cols-2" id="statsBox">
+                    <div>
+                        <div class="statLabel">Deposit Token</div>
+                        <div class="cursor-pointer statValue">{{stream.depositToken.symbol}} →</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Reward Token</div>
+                        <div class="cursor-pointer statValue">{{stream.rewardToken.symbol}} →</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Total Reward</div>
+                        <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Lock Duration</div>
+                        <div class="statValue">{{stream.streamParams.depositLockDuration}}</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Stream Start</div>
+                        <div class="statValue">{{streamStart}}</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Stream End</div>
+                        <div class="statValue">{{streamEnd}}</div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-10 lg:px-12">
+                <div class="roundedBox">
+                    <div class="grid grid-cols-2">
+                        <div 
+                            class="text-center py-4 cursor-pointer tab rounded-tl" 
+                            :class="{tabInactive: !depositTabActive}"
+                            @click="depositTabActive = true">
+                            DEPOSIT
+                        </div>
+                        <div 
+                            class="text-center py-4 cursor-pointer tab rounded-tr" 
+                            :class="{tabInactive: depositTabActive}"
+                            @click="depositTabActive = false">
+                            WITHDRAW
+                        </div>
+                    </div>
+                    <Deposit :stream="stream"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+
+.roundedBox {
+  border-radius: 8px;
+  background: #ffffff10;
+}
+
+.tab {
+  font-family: VCR
+}
+
+.tab:hover {
+  color: #fff;
+}
+
+.tabInactive {
+  background: #ffffff10;
+}
+
+#statsBox > div {
+  padding: 20px;
+}
+
+</style>

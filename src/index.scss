@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: "VCR";
+        src: local("VCR"), url(./assets/fonts/VCR_OSD_MONO.ttf) format("truetype");
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+}
+
+html, 
+body,
+#app {
+    background-color: #030309;
+    color: rgb(210, 210, 220);
+    font-family: Inter;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.actionButton {
+    font-family: VCR;
+    font-size: 16px;
+    border-radius: 4px;
+    background: #ffffff10;
+    padding: 16px;
+    text-align: center;
+    line-height: 24px;
+}
+  
+.actionButton:hover {
+    background: rgba(46, 186, 198, 0.08);
+}
+  
+p {
+    font-family: Inter;
+    color: rgb(210, 210, 220);
+}
+  
+h2 {
+    font-family: VCR;
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.statLabel {
+    font-size: 9pt;
+    opacity: 0.7;
+    font-family: Inter;
+}
+  
+.statValue {
+    font-size: 16px;
+    font-family: VCR;
+}
+
+input.textBox {
+    background: #ffffff10;
+    font-family: VCR;
+    font-size: 24px;
+    border-radius: 4px;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

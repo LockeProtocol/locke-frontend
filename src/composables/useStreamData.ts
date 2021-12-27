@@ -3,19 +3,27 @@ import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import erc20 from '@/lib/abi/erc20-abi.json'
 
-export default function useStreamData() {
+export type StreamData = {
+    rewardToken: any,
+    depositToken: any,
+    streamParams: any,
+    feeParams: any,
+    tokenAmounts: any
+}
+
+export default function useStreamData(address: string) {
 
     const { call } = useWeb3()
-    const data = reactive({
-        rewardToken: {} as any,
-        depositToken: {} as any,
-        streamParams: {} as any,
-        feeParams: {} as any,
-        tokenAmounts: {} as any
+    const data = reactive<StreamData>({
+        rewardToken: {},
+        depositToken: {},
+        streamParams: {},
+        feeParams: {},
+        tokenAmounts: {}
     })
     const loaded = ref(false)
 
-    async function load(address: string) {
+    async function load() {
         loaded.value = false;
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
@@ -45,8 +53,8 @@ export default function useStreamData() {
             feeEnabled: results[3][1]
         }
         data.tokenAmounts = {
-            rewardTokenAmount: results[4][0],
-            depositTokenAmount: results[4][1],
+            rewardTokenAmount: results[4][0] / (10 ** data.rewardToken.decimals),
+            depositTokenAmount: results[4][1] / (10 ** data.depositToken.decimals),
             rewardTokenFeeAmount: results[4][2],
             depositTokenFeeAmount: results[4][3]
         }
