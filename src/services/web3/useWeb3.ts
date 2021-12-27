@@ -2,6 +2,7 @@ import { computed, inject, ref, watch } from 'vue';
 import { Web3Plugin, Web3ProviderSymbol } from './web3.plugin';
 import { Web3Provider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
+import { TransactionResponse } from '@ethersproject/providers'
 
 /** STATE */
 const isWalletSelectVisible = ref(false);
@@ -31,6 +32,7 @@ export default function useWeb3() {
     }
     isWalletSelectVisible.value = !isWalletSelectVisible.value;
   };
+  
   const call = async (abi: any[], call: any[], options?) => {
     const contract = new Contract(call[0], abi, getProvider());
     try {
@@ -40,6 +42,43 @@ export default function useWeb3() {
       return Promise.reject(e);
     }
   }
+
+  const sendTransaction = async (
+    contractAddress: string,
+    abi: any[],
+    action: string,
+    params: any[],
+    overrides: Record<string, any> = {},
+  ): Promise<TransactionResponse> => {
+
+    console.log('Sending transaction');
+    console.log('Contract', contractAddress);
+    console.log('Action', `"${action}"`);
+    console.log('Params', params);
+
+    const GAS_LIMIT_BUFFER = 0.1
+    const signer = getSigner();
+    const contract = new Contract(contractAddress, abi, getProvider());
+    const contractWithSigner = contract.connect(signer);
+    const paramsOverrides = { ...overrides };
+  
+    try {
+      // Gas estimation
+      const gasLimitNumber = await contractWithSigner.estimateGas[action](
+        ...params,
+        paramsOverrides
+      );
+  
+      const gasLimit = gasLimitNumber.toNumber();
+      paramsOverrides.gasLimit = Math.floor(gasLimit * (1 + GAS_LIMIT_BUFFER));
+  
+      return await contractWithSigner[action](...params, paramsOverrides);
+    } catch (e) {
+      console.log(e)
+      return Promise.reject(e);
+    }
+  }
+
 
   // WATCHERS
   watch(account, () => {
@@ -65,6 +104,7 @@ export default function useWeb3() {
     getSigner,
     disconnectWallet,
     toggleWalletSelectModal,
-    call
+    call,
+    sendTransaction
   };
 }
