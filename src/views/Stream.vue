@@ -1,11 +1,13 @@
 <script setup>
-import { computed, watchEffect, ref } from 'vue'
+import { computed, watchEffect, watch, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import useStreamData from '@/composables/useStreamData'
 import { DateTime } from 'luxon'
 import Deposit from '@/components/Deposit.vue'
+import useBlockNumber from '@/composables/useBlockNumber'
 
 const { account, chainId } = useWeb3()
+const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
 const { data: stream, load: loadStream, loaded } = useStreamData('0xfdb15336C15b995d2709381494CFEf9A149FE146')
 
@@ -25,15 +27,16 @@ const depositTabActive = ref(true)
 const streamStart = computed(() => formatDate(stream.streamParams.startTime))
 const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stream.streamParams.streamDuration))
 const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
+const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
 
 // Effects
 
-watchEffect(() => connected.value && loadStream())
+watchEffect(() => connected.value && blockNumber.value && loadStream())
 
 </script>
 
 <template>
-    <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg"  v-if="loaded">
+    <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg"  v-if="connected && loaded">
         <div class="grid grid-cols-1 lg:grid-cols-2">
             <div class="flex flex-col">
                 <h2>{{stream.depositToken.symbol}} / {{stream.rewardToken.symbol}}</h2>
@@ -53,8 +56,8 @@ watchEffect(() => connected.value && loadStream())
                         <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
                     </div>
                     <div>
-                        <div class="statLabel">Lock Duration</div>
-                        <div class="statValue">{{stream.streamParams.depositLockDuration}}</div>
+                        <div class="statLabel">Total Deposited</div>
+                        <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
                     </div>
                     <div>
                         <div class="statLabel">Stream Start</div>

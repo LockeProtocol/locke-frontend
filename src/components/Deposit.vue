@@ -6,6 +6,7 @@ import useAllowance from '@/composables/useAllowance'
 import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
+import useBlockNumber from '@/composables/useBlockNumber'
 
 // Props
 const props = defineProps<{
@@ -19,8 +20,16 @@ function format(n: number): string {
 
 // Refs
 const depositAmount = ref('')
-const { account, sendTransaction } = useWeb3()
-const { balance, allowance, loaded, load, approveUnlimited, revokeApproval } = useAllowance(props.stream.depositToken.address, account.value, '0xfdb15336C15b995d2709381494CFEf9A149FE146')
+const depositing = ref(false)
+const { blockNumber } = useBlockNumber()
+const { sendTransaction } = useWeb3()
+const { balance, 
+    allowance, 
+    loaded, 
+    approving, 
+    load, 
+    approveUnlimited,
+    revokeApproval } = useAllowance(props.stream.depositToken.address, '0xfdb15336C15b995d2709381494CFEf9A149FE146')
 
 // Computed
 const estimatedReward = computed(() => {
@@ -49,7 +58,7 @@ const depositValueRaw = computed(() => {
 })
 
 const depositButtonTxt = computed(() => {
-    if (!loaded.value) {
+    if (!loaded.value || approving.value || depositing.value) {
         return '...'
     } else if (allowance.value.gt(depositValueRaw.value)) {
         return 'DEPOSIT'
@@ -58,24 +67,37 @@ const depositButtonTxt = computed(() => {
     }
 })
 
-const handleDeposit = () => {
+const maxDisplay = computed(() => {
+    return formatUnits(balance.value, props.stream.depositToken.decimals)
+})
+
+// Handlers
+
+const handleDeposit = async () => {
     if (depositButtonTxt.value == 'APPROVE') {
         approveUnlimited()
-    } else {
-        //revokeApproval()
-        sendTransaction(
+    } else if (depositButtonTxt.value == 'DEPOSIT') {
+        depositing.value = true
+        let tx = await sendTransaction(
             '0xfdb15336C15b995d2709381494CFEf9A149FE146',
             streamABI,
             'stake',
             [depositValueRaw.value])
+        depositAmount.value = ''
+        await tx.wait()
+        depositing.value = false
     }
 }
 
-const setMax = () => {
+const handleMax = () => {
     depositAmount.value = formatUnits(balance.value, props.stream.depositToken.decimals)
 }
 
-watchEffect(() => load())
+const handleRevoke = () => {
+    revokeApproval()
+}
+
+watchEffect(() => blockNumber.value && load())
 
 </script>
 
@@ -83,7 +105,7 @@ watchEffect(() => load())
     <div id="deposit" class="p-8 flex flex-col">
         <h2>DEPOSIT {{stream.depositToken.symbol}}</h2>
         <input type="number" placeholder="0" class="textBox outline-none p-3 w-full" v-model="depositAmount"/>
-        <p class="statValue text-right mt-2 mb-4"><span class="cursor-pointer" @click="setMax">Max: {{ balance / (10 ** stream.depositToken.decimals) }}</span></p>
+        <p class="statValue text-right mt-2 mb-4"><span class="cursor-pointer" @click="handleRevoke">Revoke Allowance</span> | <span class="cursor-pointer" @click="handleMax">Max: {{maxDisplay}}</span></p>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
             <p class="statLabel">Estimated Reward:</p>
             <p class="statValue text-right">{{

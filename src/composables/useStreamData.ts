@@ -24,7 +24,6 @@ export default function useStreamData(address: string) {
     const loaded = ref(false)
 
     async function load() {
-        loaded.value = false;
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
             call(streamABI, [address, 'depositToken']),

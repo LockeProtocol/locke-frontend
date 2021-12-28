@@ -1,32 +1,32 @@
 import { ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import erc20 from '@/lib/abi/erc20-abi.json'
-import { sleep } from '@/lib/utils'
 import { constants } from 'ethers'
 
-export default function useAllowance(token: string, owner: string, spender: string) {
-    const { call, sendTransaction } = useWeb3()
+export default function useAllowance(token: string, spender: string) {
+    const { call, sendTransaction, account } = useWeb3()
     const balance = ref(0)
     const allowance = ref(0)
     const loaded = ref(false)
+    const approving = ref(false)
 
     async function load() {
-        loaded.value = false
-
-        await sleep(1000)
-
+        let owner = account.value
+        if (!owner) {
+            return
+        }
         let results = await Promise.all([
             call(erc20, [token, 'balanceOf', [owner]]),
             call(erc20, [token, 'allowance', [owner, spender]]),
         ])
 
-        console.log(results)
         balance.value = results[0]
         allowance.value = results[1]
         loaded.value = true
     }
 
     async function approveUnlimited() {
+        approving.value = true
         let tx = await sendTransaction(
             token,
             erc20,
@@ -35,6 +35,7 @@ export default function useAllowance(token: string, owner: string, spender: stri
         )
         let receipt = await tx.wait()
         await load()
+        approving.value = false
     }
 
     async function revokeApproval() {
@@ -52,6 +53,7 @@ export default function useAllowance(token: string, owner: string, spender: stri
         balance,
         allowance,
         loaded,
+        approving,
         load,
         approveUnlimited,
         revokeApproval
