@@ -56,7 +56,7 @@ export default function useWeb3() {
     console.log('Action', `"${action}"`);
     console.log('Params', params);
 
-    const GAS_LIMIT_BUFFER = 0.2
+    const GAS_LIMIT_BUFFER = 0.3
     const signer = getSigner();
     const contract = new Contract(contractAddress, abi, getProvider());
     const contractWithSigner = contract.connect(signer);

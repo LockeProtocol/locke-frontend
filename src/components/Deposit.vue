@@ -29,7 +29,7 @@ const { balance,
     approving, 
     load, 
     approveUnlimited,
-    revokeApproval } = useAllowance(props.stream.depositToken.address, '0xfdb15336C15b995d2709381494CFEf9A149FE146')
+    revokeApproval } = useAllowance(props.stream.depositToken.address, props.stream.address)
 
 // Computed
 const estimatedReward = computed(() => {
@@ -79,7 +79,7 @@ const handleDeposit = async () => {
     } else if (depositButtonTxt.value == 'DEPOSIT') {
         depositing.value = true
         let tx = await sendTransaction(
-            '0xfdb15336C15b995d2709381494CFEf9A149FE146',
+            props.stream.address,
             streamABI,
             'stake',
             [depositValueRaw.value])
@@ -105,7 +105,7 @@ watchEffect(() => blockNumber.value && load())
     <div id="deposit" class="p-8 flex flex-col">
         <h2>DEPOSIT {{stream.depositToken.symbol}}</h2>
         <input type="number" placeholder="0" class="textBox outline-none p-3 w-full" v-model="depositAmount"/>
-        <p class="statValue text-right mt-2 mb-4"><span class="cursor-pointer" @click="handleRevoke">Revoke Allowance</span> | <span class="cursor-pointer" @click="handleMax">Max: {{maxDisplay}}</span></p>
+        <p class="statValue text-right mt-2 mb-4"><span class="cursor-pointer opacity-0" @click="handleRevoke">Revoke Allowance</span> <span class="cursor-pointer" @click="handleMax">Max: {{maxDisplay}}</span></p>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
             <p class="statLabel">Estimated Reward:</p>
             <p class="statValue text-right">{{
@@ -128,6 +128,6 @@ watchEffect(() => blockNumber.value && load())
 
 <style scoped>
 #deposit .statValue {
-    font-size: 12px;
+    font-size: 14px;
 }
 </style>
