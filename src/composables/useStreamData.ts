@@ -3,6 +3,8 @@ import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import erc20 from '@/lib/abi/erc20-abi.json'
 import { Contract } from '@ethersproject/contracts'
+import _ from 'lodash'
+import { BigNumber } from '@ethersproject/bignumber'
 
 export type StreamData = {
     address: any,
@@ -40,7 +42,8 @@ export default function useStreamData(address: string) {
             call(streamABI, [address, 'feeParams']),
             call(streamABI, [address, 'tokenAmounts']),
             call(streamABI, [address, 'isSale']),
-            call(streamABI, [address, 'tokensNotYetStreamed(address)', [user]])
+            call(streamABI, [address, 'tokensNotYetStreamed(address)', [user]]),
+            getNetDeposits(user)
         ])
 
         let tokens = await Promise.all([
@@ -70,9 +73,10 @@ export default function useStreamData(address: string) {
         data.isSale = !!results[5]
         data.userState = {
             rewards: results[6].rewards / (10 ** data.rewardToken.decimals),
-            tokens: results[6].tokens / (10 ** data.depositToken.decimals)
+            tokens: results[6].tokens / (10 ** data.depositToken.decimals),
+            netDeposits: results[7] / (10 ** data.depositToken.decimals)
         }
-        await getInteractions(user)
+        
         loaded.value = true
     }
 
@@ -90,16 +94,19 @@ export default function useStreamData(address: string) {
         }
     }
 
-    async function getInteractions(user: string) {
+    async function getNetDeposits(user: string) {
         let contract = new Contract(address, streamABI, getProvider())
-        let withdraws = contract.filters.Withdrawn(user)
-        let stakes = contract.filters.Staked(user)
+        let withdrawFilter = contract.filters.Withdrawn(user)
+        let stakeFilter = contract.filters.Staked(user)
         let result = await Promise.all([
-            contract.queryFilter(withdraws),
-            contract.queryFilter(stakes)
+            contract.queryFilter(withdrawFilter),
+            contract.queryFilter(stakeFilter)
         ])
+        let withdraws = result[0].map((w) => w.args?.amount.mul(BigNumber.from(-1)))
+        let stakes = result[1].map((s) => s.args?.amount)
+        let events = withdraws.concat(stakes)
+        return _.reduce(events, (sum, n) => sum.add(n), BigNumber.from(0))
 
-        
     }
 
     return {
