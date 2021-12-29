@@ -1,17 +1,18 @@
 <script setup>
-import { computed, watchEffect, watch, ref } from 'vue'
+import { computed, watchEffect, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import useStreamData from '@/composables/useStreamData'
 import { DateTime } from 'luxon'
 import useBlockNumber from '@/composables/useBlockNumber'
 import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
-import ClaimReward from '@/components/ClaimReward'
+import ClaimReward from '@/components/ClaimReward.vue'
+import Chart from '@/components/Chart.vue'
 
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
-const { data: stream, load: loadStream, loaded } = useStreamData('0xc1bb816c963F02a587583fa945391933D8EE14BB')
+const { data: stream, load: loadStream, loaded, getTVLHistory } = useStreamData('0x5454bd26C0A5a0aA77f06bbA7E35012b94C5B89a')
 
 // Helpers
 
@@ -30,6 +31,7 @@ const streamStart = computed(() => formatDate(stream.streamParams.startTime))
 const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stream.streamParams.streamDuration))
 const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
 const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
+const streamType = computed(() => stream.isSale ? "Sale" : "Rental")
 
 // Effects
 
@@ -42,34 +44,41 @@ watchEffect(() => connected.value && blockNumber.value && loadStream())
         <div class="grid grid-cols-1 lg:grid-cols-2">
             <div class="flex flex-col">
                 <h2>{{stream.depositToken.symbol}} / {{stream.rewardToken.symbol}}</h2>
-                <p class="mb-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore. Laoreet torquent tincidunt sollicitudin pretium non ultrices diam arcu semper purus, est cursus morbi.</p>
+                <p class="mb-12">Deposit {{stream.depositToken.symbol}} to earn {{stream.rewardToken.symbol}} over time. Rewards are earned continuously and distributed pro rata to all depositors.</p>
                 <div class="roundedBox py-4">
-                <div class="grid grid-cols-2" id="statsBox">
-                    <div>
-                        <div class="statLabel">Deposit Token</div>
-                        <div class="cursor-pointer statValue">{{stream.depositToken.symbol}} →</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Reward Token</div>
-                        <div class="cursor-pointer statValue">{{stream.rewardToken.symbol}} →</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Total Reward</div>
-                        <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Total Deposited</div>
-                        <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Stream Start</div>
-                        <div class="statValue">{{streamStart}}</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Stream End</div>
-                        <div class="statValue">{{streamEnd}}</div>
+                    <div class="grid grid-cols-2" id="statsBox">
+                        <div>
+                            <div class="statLabel">Deposit Token</div>
+                            <div class="cursor-pointer statValue">{{stream.depositToken.symbol}} →</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Reward Token</div>
+                            <div class="cursor-pointer statValue">{{stream.rewardToken.symbol}} →</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Total Reward</div>
+                            <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Stream Type</div>
+                            <div class="statValue">{{streamType}}</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Stream Start</div>
+                            <div class="statValue">{{streamStart}}</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Stream End</div>
+                            <div class="statValue">{{streamEnd}}</div>
+                        </div>
                     </div>
                 </div>
+                <div class="roundedBox flex flex-col my-12 overflow-hidden">
+                    <div class="p-4">
+                        <div class="statLabel">Total Value Deposited</div>
+                        <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
+                    </div>
+                    <Chart :stream="stream"/>
                 </div>
             </div>
             <div class="flex flex-col gap-10 lg:px-12">

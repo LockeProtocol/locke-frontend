@@ -113,6 +113,6 @@ export default function useStreamData(address: string) {
     return {
         data,
         loaded,
-        load
+        load,
     }
 }

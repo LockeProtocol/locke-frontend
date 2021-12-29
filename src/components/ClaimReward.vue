@@ -36,7 +36,7 @@ const { sendTransaction } = useWeb3()
 const tokensLocked = computed(() => props.stream.userState?.netDeposits - props.stream.userState?.tokens)
 const rewardsEarned = computed(() => props.stream.userState?.rewards)
 const avgPrice = computed(() => tokensLocked.value / rewardsEarned.value)
-const isStreamEnded = computed(() => DateTime.now().toSeconds() > props.stream.streamParams.streamStart + props.stream.streamParams.streamDuration)
+const isStreamEnded = computed(() => secondsRemaining.value <= 0)
 const secondsRemaining = computed(() => {
     return props.stream.streamParams.startTime 
         + props.stream.streamParams.streamDuration 
@@ -59,7 +59,7 @@ const handleClaim = async () => {
     <div id="claim-reward" class="mx-auto p-8 flex flex-col">
         <h2 class="label">CLAIM REWARDS</h2>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
-            <p class="statLabel">Tokens Locked:</p>
+            <p class="statLabel">Tokens Streamed:</p>
             <p class="statValue text-right">{{format(tokensLocked)}} {{stream.depositToken.symbol}}</p>
             <p class="statLabel">Rewards Earned:</p>
             <p class="statValue text-right">{{format(rewardsEarned)}} {{stream.rewardToken.symbol}}</p>
