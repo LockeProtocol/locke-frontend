@@ -911,6 +911,11 @@
     "@babel/helper-validator-identifier" "^7.15.7"
     to-fast-properties "^2.0.0"
 
+"@chenfengyuan/vue-countdown@^2.0.0-rc":
+  version "2.0.0-rc"
+  resolved "https://registry.yarnpkg.com/@chenfengyuan/vue-countdown/-/vue-countdown-2.0.0-rc.tgz#548a219df17924fbbc9bbef045a59d1c8a7f8b3c"
+  integrity sha512-LfSA54cfYKR325pGZOtf35YJHdfhBUOi2Bl3CAQdJR8ax5uIMAastevVpWpKGa11gm23iB6FlpilxH4J87XzOQ==
+
 "@ethersproject/abi@5.5.0", "@ethersproject/abi@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/abi/-/abi-5.5.0.tgz#fb52820e22e50b854ff15ce1647cc508d6660613"

@@ -7,6 +7,7 @@ import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import useBlockNumber from '@/composables/useBlockNumber'
+import VueCountdown from '@chenfengyuan/vue-countdown';
 
 // Props
 const props = defineProps<{
@@ -14,8 +15,21 @@ const props = defineProps<{
 }>()
 
 function format(n: number): string {
+    if (isNaN(n)) return '--'
+    if (n == 0) return '0.00'
     let decimals = Math.max(2, Math.floor(Math.log10(n)) * -1 + 1)
     return n.toFixed(decimals)
+}
+
+// For countdown timer
+function transformSlotProps(props: Object) {
+    const formattedProps = {};
+
+      Object.entries(props).forEach(([key, value]) => {
+        formattedProps[key] = value < 10 ? `0${value}` : String(value);
+      });
+
+      return formattedProps;
 }
 
 // Refs
@@ -46,11 +60,10 @@ const estimatedPrice = computed(() => {
     return depositValue / estimatedReward.value
 })
 
-const daysRemaining = computed(() => {
-    let secondsRemaining = props.stream.streamParams.startTime 
+const secondsRemaining = computed(() => {
+    return props.stream.streamParams.startTime 
         + props.stream.streamParams.streamDuration 
         - DateTime.now().toSeconds()
-    return secondsRemaining / (60 * 60 * 24)
 })
 
 const depositValueRaw = computed(() => {
@@ -120,7 +133,11 @@ watchEffect(() => blockNumber.value && load())
                 : '--'
             }}</p>
             <p class="statLabel">Time Remaining:</p>
-            <p class="statValue text-right">{{format(daysRemaining)}} days</p>
+            <p class="statValue text-right">
+                <vue-countdown :time="secondsRemaining * 1000" :transform="transformSlotProps" v-slot="{ days, hours, minutes, seconds }">
+                    {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }}
+                </vue-countdown>
+            </p>
         </div>
         <div class="w-full cursor-pointer actionButton" @click="handleDeposit">{{depositButtonTxt}}</div>
     </div>

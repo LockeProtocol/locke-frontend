@@ -6,11 +6,12 @@ import { DateTime } from 'luxon'
 import useBlockNumber from '@/composables/useBlockNumber'
 import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
+import ClaimReward from '@/components/ClaimReward'
 
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
-const { data: stream, load: loadStream, loaded } = useStreamData('0x065334161202485994c3fD07E5b798805478ccE3')
+const { data: stream, load: loadStream, loaded } = useStreamData('0xc1bb816c963F02a587583fa945391933D8EE14BB')
 
 // Helpers
 
@@ -89,6 +90,9 @@ watchEffect(() => connected.value && blockNumber.value && loadStream())
                     </div>
                     <Deposit v-show="depositTabActive" :stream="stream"/>
                     <Withdraw v-show="!depositTabActive" :stream="stream"/>
+                </div>
+                <div class="roundedBox">
+                    <ClaimReward :stream="stream"/>
                 </div>
             </div>
         </div>

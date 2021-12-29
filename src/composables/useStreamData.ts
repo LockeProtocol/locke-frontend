@@ -43,7 +43,8 @@ export default function useStreamData(address: string) {
             call(streamABI, [address, 'tokenAmounts']),
             call(streamABI, [address, 'isSale']),
             call(streamABI, [address, 'tokensNotYetStreamed(address)', [user]]),
-            getNetDeposits(user)
+            call(streamABI, [address, 'getEarned', [user]]),
+            getNetDeposits(user),
         ])
 
         let tokens = await Promise.all([
@@ -72,9 +73,9 @@ export default function useStreamData(address: string) {
         }
         data.isSale = !!results[5]
         data.userState = {
-            rewards: results[6].rewards / (10 ** data.rewardToken.decimals),
+            rewards: results[7] / (10 ** data.rewardToken.decimals),
             tokens: results[6].tokens / (10 ** data.depositToken.decimals),
-            netDeposits: results[7] / (10 ** data.depositToken.decimals)
+            netDeposits: results[8] / (10 ** data.depositToken.decimals)
         }
         
         loaded.value = true

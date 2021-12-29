@@ -56,11 +56,11 @@ const handleExit = async () => {
         <input type="number" placeholder="0" class="textBox outline-none p-3 w-full mb-4" v-model="withdrawAmount"/>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
             <p class="statLabel">Net Deposits:</p>
-            <p class="statValue text-right">{{format(stream.userState?.netDeposits)}}</p>
-            <p class="statLabel">Tokens Locked:</p>
-            <p class="statValue text-right">{{format(stream.userState?.netDeposits - stream.userState?.tokens)}}</p>
+            <p class="statValue text-right">{{format(stream.userState?.netDeposits)}} {{stream.depositToken.symbol}}</p>
+            <p class="statLabel">Tokens Streamed:</p>
+            <p class="statValue text-right">{{format(stream.userState?.netDeposits - stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
             <p class="statLabel">Tokens Withdrawable:</p>
-            <p class="statValue text-right">{{format(stream.userState?.tokens)}}</p>
+            <p class="statValue text-right">{{format(stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
             <div class="w-full cursor-pointer actionButton" @click="handleWithdraw">WITHDRAW</div>
