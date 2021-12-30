@@ -14,7 +14,7 @@ export type StreamData = {
     feeParams: any,
     tokenAmounts: any,
     isSale: any,
-    userState: any
+    userState: any,
 }
 
 export default function useStreamData(address: string) {
@@ -28,7 +28,7 @@ export default function useStreamData(address: string) {
         feeParams: {},
         tokenAmounts: {},
         isSale: false,
-        userState: {}
+        userState: {},
     })
     const loaded = ref(false)
 

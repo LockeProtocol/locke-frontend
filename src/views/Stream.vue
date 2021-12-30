@@ -12,7 +12,7 @@ import Chart from '@/components/Chart.vue'
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
-const { data: stream, load: loadStream, loaded, getTVLHistory } = useStreamData('0x5454bd26C0A5a0aA77f06bbA7E35012b94C5B89a')
+const { data: stream, load: loadStream, loaded, getTVLHistory } = useStreamData('0xaB58A6a34beB45e94BD4678319006010B5F86C80')
 
 // Helpers
 
@@ -32,6 +32,14 @@ const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stre
 const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
 const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
 const streamType = computed(() => stream.isSale ? "Sale" : "Rental")
+const fractionRemaining = computed(() => Math.min(1, Math.max(0, 1 - (DateTime.now().toSeconds() - stream.streamParams.startTime) / stream.streamParams.streamDuration)))
+const currentPrice = computed(() => {
+    console.log(fractionRemaining.value)
+    return stream.tokenAmounts.depositTokenAmount / (stream.tokenAmounts.rewardTokenAmount * fractionRemaining.value)
+})
+// const currentPrice = computed(() => {
+//     return (stream.rewardPerToken / (10 ** stream.rewardToken.decimals))
+// })
 
 // Effects
 
@@ -70,6 +78,14 @@ watchEffect(() => connected.value && blockNumber.value && loadStream())
                         <div>
                             <div class="statLabel">Stream End</div>
                             <div class="statValue">{{streamEnd}}</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Current Price</div>
+                            <div class="statValue">{{currentPrice}}</div>
+                        </div>
+                        <div>
+                            <div class="statLabel">Fee</div>
+                            <div class="statValue">{{stream.feeParams.feePercent}}</div>
                         </div>
                     </div>
                 </div>

@@ -13,7 +13,7 @@ const props = defineProps({
     stream: null
 })
 
-const { tvlHistory, tvlHistoryLoaded, loadTVLHistory } = useChartData()
+const { tvlHistory, historyLoaded, loadHistory, priceHistory } = useChartData()
 const { blockNumber } = useBlockNumber()
 
 onMounted(async () => {
@@ -23,8 +23,8 @@ onMounted(async () => {
 watch(blockNumber, reloadChart)
 
 async function reloadChart() {
-    await loadTVLHistory(props.stream)
-    drawChart(chart.value, tooltip.value.$el, tvlHistory.value)
+    await loadHistory(props.stream)
+    drawChart(chart.value, tooltip.value.$el, priceHistory.value)
 }
 
 function drawChart(el, tooltip, data) {
@@ -54,7 +54,7 @@ function drawChart(el, tooltip, data) {
 
     // Add Y axis
     var y = d3.scaleLinear()
-        .domain([ 0, d3.max(data, d => +d.tvl) * 1.05])
+        .domain([ 0, d3.max(data, d => +d.value) * 1.05])
         .range([ height, 0 ]);
 
 
@@ -66,7 +66,7 @@ function drawChart(el, tooltip, data) {
         .attr("stroke-width", 1.5)
         .attr("d", d3.line().curve(d3.curveBumpX)
                 .x(d => x(d.date))
-                .y(d => y(d.tvl))
+                .y(d => y(d.value))
                 )
 
     var gradient = svg.append("linearGradient")
@@ -87,7 +87,7 @@ function drawChart(el, tooltip, data) {
         .attr("d", d3.area().curve(d3.curveBumpX)
             .x(d => x(d.date))
             .y0(() => y(0))
-            .y1(d => y(d.tvl)))
+            .y1(d => y(d.value)))
 
     svg
         .append('rect')
@@ -99,9 +99,8 @@ function drawChart(el, tooltip, data) {
         .on('mousemove', mousemove)
         .on('mouseout', mouseout);
     
-    var bisect = d3.bisector(d => d.date).right;
+    var bisect = d3.bisector(d => d.date).center;
     var tip = d3.select(tooltip);
-    console.log(tip)
 
     var focus = svg
         .append('g')
@@ -126,21 +125,21 @@ function drawChart(el, tooltip, data) {
         var pointerX = d3.pointer(event)[0]
         var x0 = x.invert(pointerX);
         var i = bisect(data, x0);
-        var tvl = data[i].tvl;
+        var value = data[i].value;
         var date = data[i].date;
 
         focus
             .attr("d", function () {
                 var d = "M" + x(date) + "," + 0;
                 d += " " + x(date) + "," + height;
-                d += "M" + 0 + "," + y(tvl);
-                d += " " + width + "," + y(tvl);
+                d += "M" + 0 + "," + y(value);
+                d += " " + width + "," + y(value);
                 return d;
             })
         tip.style("left", event.pageX + "px").style("top", event.pageY + "px");
         tip
             .selectAll('div')
-            .html(`${d3.timeFormat("%Y-%m-%d")(date)}<br/>${d3.format("$,.2f")(tvl)}`)
+            .html(`${d3.timeFormat("%Y-%m-%d")(date)}<br/>${d3.format(",.2f")(value)}`)
             .attr('fill', '#ffffff')
     }
 }

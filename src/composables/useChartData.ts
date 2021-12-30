@@ -7,12 +7,51 @@ import { BigNumber } from '@ethersproject/bignumber'
 
 export default function useChartData() {
 
-    const tvlHistory = ref<Object[]>()
-    const tvlHistoryLoaded = ref(false)
+    const tvlHistory = ref<any[]>()
+    const priceHistory = ref<any[]>()
+    const historyLoaded = ref(false)
     const { getProvider } = useWeb3()
 
-    async function loadTVLHistory(stream) {
-        tvlHistoryLoaded.value = false
+    async function loadHistory(stream) {
+        historyLoaded.value = false
+        let events = await getStreamEvents(stream)
+
+        let streamStart = stream.streamParams.startTime
+        let streamDuration = stream.streamParams.streamDuration
+        let streamEnd = streamStart + streamDuration
+        let totalRewards = stream.tokenAmounts.rewardTokenAmount
+
+        let history = _.reduce(events, (agg, event) => {
+            
+            let prevTimestamp = agg[agg.length-1]?.timestamp ?? event.timestamp
+            let prevTVL = agg[agg.length-1]?.tvl ?? 0
+            let prevStreamed = agg[agg.length-1]?.streamed ?? 0
+            let elapsedTime = Math.max(0, event.timestamp - Math.max(streamStart, prevTimestamp))
+            let remainingTime = streamEnd - Math.max(streamStart, prevTimestamp)
+            let fractionStreamed = elapsedTime / remainingTime
+            let amount = event.amount / (10 ** stream.depositToken.decimals)
+
+            agg.push({
+                timestamp: event.timestamp,
+                tvl: prevTVL + amount,
+                streamed: prevStreamed + ((prevTVL - prevStreamed) * fractionStreamed),
+                rewardsOwed: totalRewards * (Math.max(0, event.timestamp - streamStart) / streamDuration)
+            })
+
+            return agg
+        }, [])
+        tvlHistory.value = history.map((h) => ({
+            date: new Date(h.timestamp * 1000),
+            value: h.tvl
+        }))
+        priceHistory.value = history.map((h) => ({
+            date: new Date(h.timestamp * 1000),
+            value: (h.tvl - h.streamed) / (totalRewards - h.rewardsOwed)
+        }))
+        historyLoaded.value = true
+    }
+
+    async function getStreamEvents(stream) {
         let contract = new Contract(stream.address, streamABI, getProvider())
         let withdrawFilter = contract.filters.Withdrawn()
         let stakeFilter = contract.filters.Staked()
@@ -20,36 +59,22 @@ export default function useChartData() {
             contract.queryFilter(withdrawFilter),
             contract.queryFilter(stakeFilter)
         ])
-        let withdraws = result[0].map((w) => ({
+        let withdraws = await Promise.all(result[0].map(async (w) => ({
             amount: w.args?.amount.mul(BigNumber.from(-1)),
-            block: w.blockNumber
-        }))
-        let stakes = result[1].map((s) => ({
+            timestamp: (await w.getBlock()).timestamp
+        })))
+        let stakes = await Promise.all(result[1].map(async (s) => ({
             amount: s.args?.amount,
-            block: s.blockNumber
-        }))
-        let events = _.orderBy(withdraws.concat(stakes), 'block')
-
-        console.log(events)
-        let history = _.reduce(events, (ctvl, event) => {
-            console.log(ctvl)
-            ctvl.push({
-                block: event.block,
-                tvl: ctvl.length > 0 ? ctvl[ctvl.length-1].tvl.add(event.amount) : event.amount
-            })
-            return ctvl
-        }, [] )
-        console.log(history)
-        tvlHistory.value = history.map((h) => ({
-            date: h.block,
-            tvl: h.tvl / (10 ** stream.depositToken.decimals)
-        }))
-        tvlHistoryLoaded.value = true
+            timestamp: (await s.getBlock()).timestamp
+        })))
+        let events = _.orderBy(withdraws.concat(stakes), 'timestamp')
+        return events
     }
 
     return {
-        loadTVLHistory,
+        loadHistory,
         tvlHistory,
-        tvlHistoryLoaded,
+        priceHistory,
+        historyLoaded,
     }
 }
