@@ -23,12 +23,17 @@ export default function useChartData() {
 
         let history = _.reduce(events, (agg, event) => {
             
+            // Values as of last event
             let prevTimestamp = agg[agg.length-1]?.timestamp ?? event.timestamp
             let prevTVL = agg[agg.length-1]?.tvl ?? 0
             let prevStreamed = agg[agg.length-1]?.streamed ?? 0
+
+            // Calculate streaming speed since last event
             let elapsedTime = Math.max(0, event.timestamp - Math.max(streamStart, prevTimestamp))
             let remainingTime = streamEnd - Math.max(streamStart, prevTimestamp)
             let fractionStreamed = elapsedTime / remainingTime
+            
+            // This event
             let amount = event.amount / (10 ** stream.depositToken.decimals)
 
             agg.push({
@@ -49,6 +54,13 @@ export default function useChartData() {
             value: (h.tvl - h.streamed) / (totalRewards - h.rewardsOwed)
         }))
         historyLoaded.value = true
+
+        // TODO: This is a hack until we can get streamed 
+        // amounts from the smart contract
+        stream.depositTokenUnstreamed = (
+            history[history.length - 1]?.tvl ?? 0) - 
+            (history[history.length - 1]?.streamed ?? 0)
+        stream.rewardTokenRemaining = totalRewards - (history[history.length - 1]?.rewardsOwed ?? 0)
     }
 
     async function getStreamEvents(stream) {
@@ -68,6 +80,10 @@ export default function useChartData() {
             timestamp: (await s.getBlock()).timestamp
         })))
         let events = _.orderBy(withdraws.concat(stakes), 'timestamp')
+        events.push({
+            amount: 0,
+            timestamp: new Date().getTime() / 1000
+        })
         return events
     }
 

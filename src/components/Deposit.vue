@@ -47,12 +47,13 @@ const { balance,
 
 // Computed
 const estimatedReward = computed(() => {
-    let tvl = props.stream.tokenAmounts.depositTokenAmount
+    let unstreamed = props.stream.depositTokenUnstreamed
     let depositValue = parseFloat(depositAmount.value)
-    let elapsedTime = DateTime.now().toSeconds() - props.stream.streamParams.startTime
-    let fractionElapsed = elapsedTime / props.stream.streamParams.streamDuration
-    let remainingReward = (props.stream.tokenAmounts.rewardTokenAmount) * (1 - fractionElapsed)
-    return remainingReward * (depositValue / (tvl + depositValue))
+    // let elapsedTime = DateTime.now().toSeconds() - props.stream.streamParams.startTime
+    // let fractionElapsed = elapsedTime / props.stream.streamParams.streamDuration
+    // let remainingReward = (props.stream.tokenAmounts.rewardTokenAmount) * (1 - fractionElapsed)
+    let remainingReward = props.stream.rewardTokenRemaining
+    return remainingReward * (depositValue / (unstreamed + depositValue))
 })
 
 const estimatedPrice = computed(() => {
@@ -91,14 +92,17 @@ const handleDeposit = async () => {
         approveUnlimited()
     } else if (depositButtonTxt.value == 'DEPOSIT') {
         depositing.value = true
-        let tx = await sendTransaction(
-            props.stream.address,
-            streamABI,
-            'stake',
-            [depositValueRaw.value])
-        depositAmount.value = ''
-        await tx.wait()
-        depositing.value = false
+        try {
+            let tx = await sendTransaction(
+                props.stream.address,
+                streamABI,
+                'stake',
+                [depositValueRaw.value])
+            depositAmount.value = ''
+            await tx.wait()
+        } finally {
+            depositing.value = false
+        }
     }
 }
 

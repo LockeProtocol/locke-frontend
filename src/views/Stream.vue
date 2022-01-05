@@ -12,7 +12,7 @@ import Chart from '@/components/Chart.vue'
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
-const { data: stream, load: loadStream, loaded, getTVLHistory } = useStreamData('0xaB58A6a34beB45e94BD4678319006010B5F86C80')
+const { data: stream, load: loadStream, loaded } = useStreamData('0xcD33271f3Cebc145D694C95F44E4922EC5405DC6')
 
 // Helpers
 
@@ -32,14 +32,9 @@ const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stre
 const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
 const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
 const streamType = computed(() => stream.isSale ? "Sale" : "Rental")
-const fractionRemaining = computed(() => Math.min(1, Math.max(0, 1 - (DateTime.now().toSeconds() - stream.streamParams.startTime) / stream.streamParams.streamDuration)))
 const currentPrice = computed(() => {
-    console.log(fractionRemaining.value)
-    return stream.tokenAmounts.depositTokenAmount / (stream.tokenAmounts.rewardTokenAmount * fractionRemaining.value)
+    return (stream.depositTokenUnstreamed / stream.rewardTokenRemaining).toLocaleString()
 })
-// const currentPrice = computed(() => {
-//     return (stream.rewardPerToken / (10 ** stream.rewardToken.decimals))
-// })
 
 // Effects
 
@@ -80,8 +75,8 @@ watchEffect(() => connected.value && blockNumber.value && loadStream())
                             <div class="statValue">{{streamEnd}}</div>
                         </div>
                         <div>
-                            <div class="statLabel">Current Price</div>
-                            <div class="statValue">{{currentPrice}}</div>
+                            <div class="statLabel">Total Deposited</div>
+                            <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
                         </div>
                         <div>
                             <div class="statLabel">Fee</div>
@@ -91,8 +86,8 @@ watchEffect(() => connected.value && blockNumber.value && loadStream())
                 </div>
                 <div class="roundedBox flex flex-col my-12 overflow-hidden">
                     <div class="p-4">
-                        <div class="statLabel">Total Value Deposited</div>
-                        <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
+                        <div class="statLabel">Current Price</div>
+                        <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
                     </div>
                     <Chart :stream="stream"/>
                 </div>

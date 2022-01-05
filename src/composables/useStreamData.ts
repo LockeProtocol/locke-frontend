@@ -15,6 +15,8 @@ export type StreamData = {
     tokenAmounts: any,
     isSale: any,
     userState: any,
+    depositTokenUnstreamed: any,
+    rewardTokenRemaining: any
 }
 
 export default function useStreamData(address: string) {
@@ -29,6 +31,8 @@ export default function useStreamData(address: string) {
         tokenAmounts: {},
         isSale: false,
         userState: {},
+        depositTokenUnstreamed: 0,
+        rewardTokenRemaining: 0
     })
     const loaded = ref(false)
 
@@ -42,6 +46,8 @@ export default function useStreamData(address: string) {
             call(streamABI, [address, 'feeParams']),
             call(streamABI, [address, 'tokenAmounts']),
             call(streamABI, [address, 'isSale']),
+            // TODO: tokensNotYetStreamed needs to be replaced when smart contract 
+            // can reflect value as of current block
             call(streamABI, [address, 'tokensNotYetStreamed(address)', [user]]),
             call(streamABI, [address, 'getEarned', [user]]),
             getNetDeposits(user),

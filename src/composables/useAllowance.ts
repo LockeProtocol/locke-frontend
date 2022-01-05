@@ -27,15 +27,18 @@ export default function useAllowance(token: string, spender: string) {
 
     async function approveUnlimited() {
         approving.value = true
-        let tx = await sendTransaction(
-            token,
-            erc20,
-            'approve',
-            [spender, constants.MaxUint256]
-        )
-        let receipt = await tx.wait()
-        await load()
-        approving.value = false
+        try {
+            let tx = await sendTransaction(
+                token,
+                erc20,
+                'approve',
+                [spender, constants.MaxUint256]
+            )
+            let receipt = await tx.wait()
+            await load()
+        } finally {
+            approving.value = false
+        } 
     }
 
     async function revokeApproval() {
