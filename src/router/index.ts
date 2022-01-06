@@ -7,6 +7,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "home" */ '../views/Stream.vue')
   },
   {
+    path: '/stream/:address',
+    name: 'Stream',
+    component: () => import(/* webpackChunkName: "stream" */ '../views/Stream.vue')
+  },
+  {
     path: '/streamdetails',
     name: 'StreamDetails',
     component: () => import(/* webpackChunkName: "stream" */ '../views/StreamDetails.vue')

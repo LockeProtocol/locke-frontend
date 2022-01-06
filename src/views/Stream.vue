@@ -1,9 +1,10 @@
 <script setup>
-import { computed, watchEffect, ref } from 'vue'
+import { computed, watchEffect, watch, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import useStreamData from '@/composables/useStreamData'
 import { DateTime } from 'luxon'
 import useBlockNumber from '@/composables/useBlockNumber'
+import { useRoute } from 'vue-router'
 import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import ClaimReward from '@/components/ClaimReward.vue'
@@ -12,7 +13,8 @@ import Chart from '@/components/Chart.vue'
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
-const { data: stream, load: loadStream, loaded } = useStreamData('0xcD33271f3Cebc145D694C95F44E4922EC5405DC6')
+const route = useRoute()
+const { data: stream, load: loadStream, loaded } = useStreamData(route.params.address)
 
 // Helpers
 
@@ -38,7 +40,8 @@ const currentPrice = computed(() => {
 
 // Effects
 
-watchEffect(() => connected.value && blockNumber.value && loadStream())
+watchEffect(() => connected.value && loadStream())
+watch(blockNumber, loadStream)
 
 </script>
 

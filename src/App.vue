@@ -4,6 +4,6 @@ import Header from '@/components/Header.vue'
 <template>
   <div>
     <Header/>
-    <router-view/>
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
