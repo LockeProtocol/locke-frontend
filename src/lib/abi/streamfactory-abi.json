@@ -1,0 +1,438 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_governor",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_emergency_governor",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "feePercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "feeEnabled",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "name": "oldParams",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "feePercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "feeEnabled",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "name": "newParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "FeeParametersUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldGov",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newGov",
+        "type": "address"
+      }
+    ],
+    "name": "NewGov",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldPendingGov",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newPendingGov",
+        "type": "address"
+      }
+    ],
+    "name": "NewPendingGov",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stream_id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "stream_addr",
+        "type": "address"
+      }
+    ],
+    "name": "StreamCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "maxDepositLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxRewardLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxStreamDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStreamDuration",
+            "type": "uint32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "name": "oldParams",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "maxDepositLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxRewardLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxStreamDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStreamDuration",
+            "type": "uint32"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "name": "newParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "StreamParametersUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "__abdicate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "acceptGov",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "rewardToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "startTime",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "streamDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "depositLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "rewardLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bool",
+        "name": "isSale",
+        "type": "bool"
+      }
+    ],
+    "name": "createStream",
+    "outputs": [
+      {
+        "internalType": "contract Stream",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "currStreamId",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emergency_gov",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeParams",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "feePercent",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "feeEnabled",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gov",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "governorship",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "setEmergencyGov",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newPendingGov",
+        "type": "address"
+      }
+    ],
+    "name": "setPendingGov",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "streamParams",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "maxDepositLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "maxRewardLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "maxStreamDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minStreamDuration",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "feePercent",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "feeEnabled",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "name": "newFeeParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateFeeParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "maxDepositLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxRewardLockDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "maxStreamDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStreamDuration",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "name": "newParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateStreamParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
