@@ -33,9 +33,9 @@ const props = defineProps<{
 const { sendTransaction } = useWeb3()
 
 // Computed
-const tokensLocked = computed(() => props.stream.userState?.netDeposits - props.stream.userState?.tokens)
-const rewardsEarned = computed(() => props.stream.userState?.rewards)
-const avgPrice = computed(() => tokensLocked.value / rewardsEarned.value)
+// const tokensLocked = computed(() => props.stream.userState?.netDeposits - props.stream.userState?.tokens)
+// const rewardsEarned = computed(() => props.stream.userState?.rewards)
+// const avgPrice = computed(() => tokensLocked.value / rewardsEarned.value)
 const isStreamEnded = computed(() => secondsRemaining.value <= 0)
 const secondsRemaining = computed(() => {
     return props.stream.streamParams.startTime 
@@ -58,15 +58,7 @@ const handleClaim = async () => {
 <template>
     <div id="claim-reward" class="mx-auto p-8 flex flex-col">
         <h2 class="label">CLAIM REWARDS</h2>
-        <div class="grid grid-cols-2 m-2 mb-6 gap-2">
-            <p class="statLabel">Tokens Streamed:</p>
-            <p class="statValue text-right">{{format(tokensLocked)}} {{stream.depositToken.symbol}}</p>
-            <p class="statLabel">Rewards Earned:</p>
-            <p class="statValue text-right">{{format(rewardsEarned)}} {{stream.rewardToken.symbol}}</p>
-            <p class="statLabel">Average Price:</p>
-            <p class="statValue text-right">{{format(avgPrice)}} {{stream.depositToken.symbol}}</p>
-        </div>
-        <div class="w-full cursor-pointer actionButton" @click="handleClaim" v-if="isStreamEnded">CLAIM {{format(stream.userState?.rewards)}} {{stream.rewardToken.symbol}}</div>
+        <div class="w-full cursor-pointer actionButton" @click="handleClaim" v-if="true">CLAIM {{format(stream.userState?.rewards)}} {{stream.rewardToken.symbol}}</div>
         <div class="w-full cursor-not-allowed actionButton" v-else>
             <vue-countdown :time="secondsRemaining * 1000" :transform="transformSlotProps" v-slot="{ days, hours, minutes, seconds }">
                 {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }} REMAINING

@@ -6,8 +6,9 @@ let listenerAttached = false;
 
 export default function useBlockNumber() {
     const { provider, getProvider } = useWeb3()
-    if (!listenerAttached) {
-        getProvider().on('block', (block) => {
+    if (!listenerAttached && provider.value) {
+        console.log('attaching block listener')
+        provider.value.on('block', (block) => {
             console.log('New Block', block)
             blockNumber.value = block
         })
@@ -22,6 +23,7 @@ export default function useBlockNumber() {
             console.log('New Block', block)
             blockNumber.value = block
         })
+        listenerAttached = true;
     })
     return {
         blockNumber

@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import useChartData from '@/composables/useChartData'
 import Tooltip from '@/components/Tooltip.vue'
 import useBlockNumber from '@/composables/useBlockNumber'
+import { DateTime } from 'luxon'
 
 const d3 = require('d3')
 const chart = ref(null)
@@ -47,8 +48,14 @@ function drawChart(el, tooltip, data) {
             "translate(" + margin.left + "," + margin.top + ")")  
 
     // Add X axis
+    var streamStart = props.stream.streamParams.startTime
+    var streamEnd = props.stream.streamParams.startTime + props.stream.streamParams.streamDuration
+    var timeElapsed = DateTime.now().toSeconds() - streamStart
+    var scaleEnd = Math.min(streamStart + timeElapsed * 1.5, streamEnd)
+    var domain = [DateTime.fromSeconds(streamStart).toJSDate(), DateTime.fromSeconds(scaleEnd).toJSDate()]
     var x = d3.scaleTime()
-        .domain(d3.extent(data.map(d => d.date)))
+//        .domain(d3.extent(data.map(d => d.date)))
+        .domain(domain)
         .range([ 0, width ]);
 
 
@@ -64,7 +71,7 @@ function drawChart(el, tooltip, data) {
         .attr("fill", "none")
         .attr("stroke", "#43E0E4")
         .attr("stroke-width", 1.5)
-        .attr("d", d3.line().curve(d3.curveBumpX)
+        .attr("d", d3.line().curve(d3.curveStepAfter)
                 .x(d => x(d.date))
                 .y(d => y(d.value))
                 )
@@ -84,10 +91,27 @@ function drawChart(el, tooltip, data) {
     svg.append("path")
         .datum(data)
         .attr("fill", "url('#chartGradient')")
-        .attr("d", d3.area().curve(d3.curveBumpX)
+        .attr("d", d3.area().curve(d3.curveStepAfter)
             .x(d => x(d.date))
             .y0(() => y(0))
             .y1(d => y(d.value)))
+
+    var lastX = x(data[data.length-1].date)
+    var lastY = y(data[data.length-1].value)
+    svg
+        .append('g')
+        .append('path')
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.5px")
+        .style("stroke-dasharray", "5,5")
+        .style("opacity", 1)
+        .style("pointer-events", "none")
+        .attr("d", function() {
+            var d = "M" + lastX + "," + lastY;
+                d += " " + width + "," + lastY;
+                return d;
+        })
+        
 
     svg
         .append('rect')
