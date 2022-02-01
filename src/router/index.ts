@@ -3,8 +3,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Stream',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Stream.vue')
+    name: 'StreamList',
+    component: () => import(/* webpackChunkName: "home" */ '../views/StreamList.vue')
   },
   {
     path: '/stream/:address',

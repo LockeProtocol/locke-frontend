@@ -72,8 +72,12 @@ const depositValueRaw = computed(() => {
 })
 
 const depositButtonTxt = computed(() => {
-    if (!loaded.value || approving.value || depositing.value) {
+    if (!loaded.value) {
         return '...'
+    } else if (approving.value) {
+        return 'APPROVING...'
+    } else if (depositing.value) {
+        return 'DEPOSITING...'
     } else if (allowance.value.gt(depositValueRaw.value)) {
         return 'DEPOSIT'
     } else {
@@ -136,12 +140,12 @@ watchEffect(() => blockNumber.value && load())
                 `${format(estimatedPrice)} ${stream.depositToken.symbol}` 
                 : '--'
             }}</p>
-            <p class="statLabel">Time Remaining:</p>
+            <!-- <p class="statLabel">Time Remaining:</p>
             <p class="statValue text-right">
                 <vue-countdown :time="secondsRemaining * 1000" :transform="transformSlotProps" v-slot="{ days, hours, minutes, seconds }">
                     {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }}
                 </vue-countdown>
-            </p>
+            </p> -->
         </div>
         <div class="w-full cursor-pointer actionButton" @click="handleDeposit">{{depositButtonTxt}}</div>
     </div>

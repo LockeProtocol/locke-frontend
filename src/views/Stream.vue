@@ -9,6 +9,7 @@ import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import ClaimReward from '@/components/ClaimReward.vue'
 import Chart from '@/components/Chart.vue'
+import PositionDetails from '@/components/PositionDetails.vue'
 
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
@@ -66,8 +67,8 @@ watch(blockNumber, loadStream)
                             <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
                         </div>
                         <div>
-                            <div class="statLabel">Stream Type</div>
-                            <div class="statValue">{{streamType}}</div>
+                            <div class="statLabel">Fee</div>
+                            <div class="statValue">{{stream.feeParams.feePercent}}%</div>
                         </div>
                         <div>
                             <div class="statLabel">Stream Start</div>
@@ -77,14 +78,14 @@ watch(blockNumber, loadStream)
                             <div class="statLabel">Stream End</div>
                             <div class="statValue">{{streamEnd}}</div>
                         </div>
-                        <div>
+                        <!-- <div>
                             <div class="statLabel">Total Deposited</div>
                             <div class="statValue">{{totalDeposited}} {{stream.depositToken.symbol}}</div>
                         </div>
                         <div>
                             <div class="statLabel">Fee</div>
                             <div class="statValue">{{stream.feeParams.feePercent}}</div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="roundedBox flex flex-col my-12 overflow-hidden">
@@ -113,6 +114,9 @@ watch(blockNumber, loadStream)
                     </div>
                     <Deposit v-show="depositTabActive" :stream="stream"/>
                     <Withdraw v-show="!depositTabActive" :stream="stream"/>
+                </div>
+                <div class="roundedBox">
+                    <PositionDetails :stream="stream"/>
                 </div>
                 <div class="roundedBox">
                     <ClaimReward :stream="stream"/>

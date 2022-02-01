@@ -18,33 +18,70 @@ const props = defineProps<{
 
 // Refs
 const withdrawAmount = ref('')
+const withdrawing = ref(false)
+const exiting = ref(false)
+const errorText = ref('')
 const { sendTransaction } = useWeb3()
 
 // Computed
 const withdrawValueRaw = computed(() => {
     return parseUnits(withdrawAmount.value == '' ? '0' : withdrawAmount.value.toString(), props.stream.depositToken.decimals)
 })
+const withdrawButtonText = computed(() => {
+    if (withdrawing.value) {
+        return 'WITHDRAWING...'
+    } else {
+        return 'WITHDRAW'
+    }
+})
+const exitButtonText = computed(() => {
+    if (exiting.value) {
+        return 'EXITING...'
+    } else {
+        return 'EXIT'
+    }
+})
 
 // Handlers
 const handleWithdraw = async () => {
-    let tx = await sendTransaction(
-        props.stream.address,
-        streamABI,
-        'withdraw',
-        [withdrawValueRaw.value]
-    )
-    withdrawAmount.value = ''
-    await tx.wait()
+    try {
+        withdrawing.value = true
+        let tx = await sendTransaction(
+            props.stream.address,
+            streamABI,
+            'withdraw',
+            [withdrawValueRaw.value]
+        )
+        withdrawAmount.value = ''
+        await tx.wait()
+    } catch(e: any) {
+        console.log(e)
+        errorText.value = e.message
+    } finally {
+        withdrawing.value = false
+    }
 }
 
 const handleExit = async () => {
-    let tx = await sendTransaction(
-        props.stream.address,
-        streamABI,
-        'exit',
-        []
-    )
-    await tx.wait()
+    try {
+        exiting.value = true
+        let tx = await sendTransaction(
+            props.stream.address,
+            streamABI,
+            'exit',
+            []
+        )
+        await tx.wait()
+    } catch(e: any) {
+        console.log(e)
+        errorText.value = e.message
+    } finally {
+        exiting.value = false
+    }
+}
+
+const dismissError = () => {
+    errorText.value = ''
 }
 
 
@@ -63,8 +100,16 @@ const handleExit = async () => {
             <p class="statValue text-right">{{format(stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-            <div class="w-full cursor-pointer actionButton" @click="handleWithdraw">WITHDRAW</div>
-            <div class="w-full cursor-pointer actionButton" @click="handleExit">EXIT</div>
+            <div class="w-full cursor-pointer actionButton" @click="handleWithdraw">{{withdrawButtonText}}</div>
+            <div class="w-full cursor-pointer actionButton" @click="handleExit">{{exitButtonText}}</div>
+        </div>
+        <div class="mt-4 text-center" v-if="errorText != ''">
+            <div>
+                <div class="error">
+                    <div class="error-close" @click="dismissError">X</div>
+                    <span class="error-text">{{errorText}}</span>                    
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -73,4 +118,28 @@ const handleExit = async () => {
 #withdraw .statValue {
     font-size: 14px;
 }
+
+.error {
+    font-family: VCR;
+
+    padding: 8px;
+    border-radius: 4px;
+    background: #ffffff10;
+}
+
+.error-text {
+    font-size: 12px;
+    color: #E84142;
+}
+
+.error-close {
+    float: right;
+    font-size: 12px;
+    background: #ffffff20;
+    border-radius: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    cursor: pointer;
+}
+
 </style>
