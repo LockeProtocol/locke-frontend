@@ -72,8 +72,12 @@ const depositValueRaw = computed(() => {
 })
 
 const depositButtonTxt = computed(() => {
-    if (!loaded.value || approving.value || depositing.value) {
+    if (!loaded.value) {
         return '...'
+    } else if (approving.value) {
+        return 'APPROVING...'
+    } else if (depositing.value) {
+        return 'DEPOSITING...'
     } else if (allowance.value.gt(depositValueRaw.value)) {
         return 'DEPOSIT'
     } else {
