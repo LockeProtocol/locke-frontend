@@ -123,7 +123,7 @@ function drawChart(el, tooltip, data) {
         .on('mousemove', mousemove)
         .on('mouseout', mouseout);
     
-    var bisect = d3.bisector(d => d.date).center;
+    var bisect = d3.bisector(d => d.date).left;
     var tip = d3.select(tooltip);
 
     var focus = svg
@@ -148,14 +148,14 @@ function drawChart(el, tooltip, data) {
     function mousemove(event) {
         var pointerX = d3.pointer(event)[0]
         var x0 = x.invert(pointerX);
-        var i = bisect(data, x0);
+        var i = bisect(data, x0)-1;
         var value = data[i].value;
         var date = data[i].date;
 
         focus
             .attr("d", function () {
-                var d = "M" + x(date) + "," + 0;
-                d += " " + x(date) + "," + height;
+                var d = "M" + pointerX + "," + 0;
+                d += " " + pointerX + "," + height;
                 d += "M" + 0 + "," + y(value);
                 d += " " + width + "," + y(value);
                 return d;
@@ -171,7 +171,7 @@ function drawChart(el, tooltip, data) {
 
 <template>
     <div>
-        <div ref="chart"></div>
+        <div ref="chart" style="cursor: crosshair"></div>
         <Tooltip ref="tooltip"/>
     </div>
 </template>

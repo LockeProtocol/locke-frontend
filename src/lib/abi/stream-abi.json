@@ -13,7 +13,7 @@
       },
       {
         "internalType": "bool",
-        "name": "_isSale",
+        "name": "_isIndefinite",
         "type": "bool"
       },
       {
@@ -59,6 +59,61 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "BadERC20Interaction",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BalanceError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LockOngoing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotBeforeStream",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotCreator",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotGov",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotStream",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Reentrant",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StreamOngoing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StreamTypeError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAmount",
+    "type": "error"
   },
   {
     "anonymous": false,
@@ -220,25 +275,6 @@
         "type": "uint256"
       }
     ],
-    "name": "SoldTokensClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "who",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
     "name": "Staked",
     "type": "event"
   },
@@ -291,6 +327,25 @@
       }
     ],
     "name": "StreamIncentivized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokensClaimed",
     "type": "event"
   },
   {
@@ -520,7 +575,7 @@
         "type": "address"
       }
     ],
-    "name": "creatorClaimSoldTokens",
+    "name": "creatorClaim",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -637,19 +692,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "gov",
-    "outputs": [
-      {
-        "internalType": "contract IGoverned",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -661,8 +703,13 @@
     "outputs": [
       {
         "internalType": "uint112",
-        "name": "",
+        "name": "amt",
         "type": "uint112"
+      },
+      {
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -670,12 +717,25 @@
   },
   {
     "inputs": [],
-    "name": "isSale",
+    "name": "isIndefinite",
     "outputs": [
       {
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastUpdate",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
@@ -916,7 +976,7 @@
         "type": "address"
       }
     ],
-    "name": "tokensNotYetStreamed",
+    "name": "tokenStreamForAccount",
     "outputs": [
       {
         "internalType": "uint256",

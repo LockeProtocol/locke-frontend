@@ -57,10 +57,10 @@ export default function useChartData() {
 
         // TODO: This is a hack until we can get streamed 
         // amounts from the smart contract
-        stream.depositTokenUnstreamed = (
+        /*stream.depositTokenUnstreamed = */console.log('depositTokenUnstreamed',(
             history[history.length - 1]?.tvl ?? 0) - 
-            (history[history.length - 1]?.streamed ?? 0)
-        stream.rewardTokenRemaining = totalRewards - (history[history.length - 1]?.rewardsOwed ?? 0)
+            (history[history.length - 1]?.streamed ?? 0))
+        /*stream.rewardTokenRemaining = */console.log('rewardTokenRemaining',totalRewards - (history[history.length - 1]?.rewardsOwed ?? 0))
     }
 
     async function getStreamEvents(stream) {

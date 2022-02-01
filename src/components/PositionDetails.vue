@@ -21,6 +21,7 @@ const rewardsEarnedEnd = computed(() => {
     let totalDepositRemaining = props.stream.depositTokenUnstreamed
     let userDepositRemaining = props.stream.userState?.tokens
     let rewardRemaining = props.stream.rewardTokenRemaining
+    if (totalDepositRemaining == 0) return rewardsEarnedNow.value
     return rewardsEarnedNow.value + userDepositRemaining * rewardRemaining / totalDepositRemaining
 })
 const avgPriceNow = computed(() => {

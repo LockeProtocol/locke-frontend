@@ -39,6 +39,11 @@ const currentPrice = computed(() => {
     return (stream.depositTokenUnstreamed / stream.rewardTokenRemaining).toLocaleString()
 })
 
+// TODO: Show average price after the stream ends
+const averagePrice = computed(() => {
+    return (stream.tokenAmounts.depositTokenAmount / stream.tokenAmounts.rewardTokenAmount).toLocaleString()
+})
+
 // Effects
 
 watchEffect(() => connected.value && loadStream())

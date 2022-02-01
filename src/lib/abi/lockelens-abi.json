@@ -1,0 +1,65 @@
+[
+    {
+      "inputs": [
+        {
+          "internalType": "contract Stream",
+          "name": "stream",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "who",
+          "type": "address"
+        }
+      ],
+      "name": "currDepositTokensNotYetStreamed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract Stream",
+          "name": "stream",
+          "type": "address"
+        }
+      ],
+      "name": "currUnstreamed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract Stream",
+          "name": "stream",
+          "type": "address"
+        }
+      ],
+      "name": "rewardsRemainingToAllocate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+  
