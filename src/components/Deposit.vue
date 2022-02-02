@@ -8,25 +8,14 @@ import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { format } from '@/lib/utils/format'
 import useBlockNumber from '@/composables/useBlockNumber'
-import VueCountdown from '@chenfengyuan/vue-countdown';
 
 // Props
 const props = defineProps<{
   stream: StreamData
 }>()
 
-// For countdown timer
-function transformSlotProps(props: Object) {
-    const formattedProps = {};
-
-      Object.entries(props).forEach(([key, value]) => {
-        formattedProps[key] = value < 10 ? `0${value}` : String(value);
-      });
-
-      return formattedProps;
-}
-
 // Refs
+// TODO: Make error box a component (from Withdraw) and add to deposit and claim as well
 const depositAmount = ref('')
 const depositing = ref(false)
 const { blockNumber } = useBlockNumber()
@@ -43,9 +32,6 @@ const { balance,
 const estimatedReward = computed(() => {
     let unstreamed = props.stream.depositTokenUnstreamed
     let depositValue = parseFloat(depositAmount.value)
-    // let elapsedTime = DateTime.now().toSeconds() - props.stream.streamParams.startTime
-    // let fractionElapsed = elapsedTime / props.stream.streamParams.streamDuration
-    // let remainingReward = (props.stream.tokenAmounts.rewardTokenAmount) * (1 - fractionElapsed)
     let remainingReward = props.stream.rewardTokenRemaining
     return remainingReward * (depositValue / (unstreamed + depositValue))
 })
@@ -53,12 +39,6 @@ const estimatedReward = computed(() => {
 const estimatedPrice = computed(() => {
     let depositValue = parseFloat(depositAmount.value)
     return depositValue / estimatedReward.value
-})
-
-const secondsRemaining = computed(() => {
-    return props.stream.streamParams.startTime 
-        + props.stream.streamParams.streamDuration 
-        - DateTime.now().toSeconds()
 })
 
 const depositValueRaw = computed(() => {
@@ -134,12 +114,6 @@ watchEffect(() => blockNumber.value && load())
                 `${format(estimatedPrice)} ${stream.depositToken.symbol}` 
                 : '--'
             }}</p>
-            <!-- <p class="statLabel">Time Remaining:</p>
-            <p class="statValue text-right">
-                <vue-countdown :time="secondsRemaining * 1000" :transform="transformSlotProps" v-slot="{ days, hours, minutes, seconds }">
-                    {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }}
-                </vue-countdown>
-            </p> -->
         </div>
         <div class="w-full cursor-pointer actionButton" @click="handleDeposit">{{depositButtonTxt}}</div>
     </div>

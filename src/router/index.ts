@@ -11,11 +11,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Stream',
     component: () => import(/* webpackChunkName: "stream" */ '../views/Stream.vue')
   },
-  {
-    path: '/streamdetails',
-    name: 'StreamDetails',
-    component: () => import(/* webpackChunkName: "stream" */ '../views/StreamDetails.vue')
-  }
 ]
 
 const router = createRouter({

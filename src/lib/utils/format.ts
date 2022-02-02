@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon'
+
 export function format(n: number): string {
     if (isNaN(n)) return '--'
     if (n == 0) return n.toFixed(2)
@@ -5,6 +7,13 @@ export function format(n: number): string {
     return n.toFixed(decimals)
 }
 
+
+export function formatDate(unixTimestamp) {
+    return DateTime.fromSeconds(unixTimestamp)
+        .toLocaleString(DateTime.DATETIME_SHORT)
+}
+
 export default {
-    format: format
+    format: format,
+    formatDate: formatDate
 }

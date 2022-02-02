@@ -22,7 +22,7 @@ export type StreamData = {
 
 export default function useStreamData(address: string) {
 
-    const lensAddress = '0x98C226b7197b88Fa05680Ce88fbF22256f6Ff29a'
+    const lensAddress = '0x6a59850CFD8Da4083328Fb6DC419f20132C6Ef2a'
     const { account, call, getProvider } = useWeb3()
     const data = reactive<StreamData>({
         address: '',
