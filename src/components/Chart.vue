@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import useChartData from '@/composables/useChartData'
 import Tooltip from '@/components/Tooltip.vue'
 import useBlockNumber from '@/composables/useBlockNumber'
@@ -8,6 +8,7 @@ import { DateTime } from 'luxon'
 const d3 = require('d3')
 const chart = ref(null)
 const tooltip = ref(null)
+const xAxis = ref(null)
 defineExpose({chart, tooltip})
 
 const props = defineProps({
@@ -21,21 +22,26 @@ onMounted(async () => {
     reloadChart()
 })
 
+const currentPrice = computed(() => {
+    return (props.stream.depositTokenUnstreamed / props.stream.rewardTokenRemaining).toLocaleString()
+})
+
 watch(blockNumber, reloadChart)
 
 async function reloadChart() {
     await loadHistory(props.stream)
-    drawChart(chart.value, tooltip.value.$el, priceHistory.value)
+    drawChart(chart.value, xAxis.value, tooltip.value.$el, priceHistory.value)
 }
 
-function drawChart(el, tooltip, data) {
+function drawChart(el, axis, tooltip, data) {
 
     var margin = {top: 10, right: 0, bottom: 0, left: 0},
         width = el.clientWidth - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 420 - margin.top - margin.bottom;
 
     // remove any old svg
     d3.select(el).selectAll("svg").remove()
+    d3.select(axis).selectAll("svg").remove()
 
     // append the svg object to the body of the page
     var svg = d3.select(el)
@@ -57,6 +63,11 @@ function drawChart(el, tooltip, data) {
 //        .domain(d3.extent(data.map(d => d.date)))
         .domain(domain)
         .range([ 0, width ]);
+    d3.select(axis).append("svg")
+        .attr("width", "100%")
+        .attr('class', 'axis')
+        //.attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(4))
 
 
     // Add Y axis
@@ -170,8 +181,26 @@ function drawChart(el, tooltip, data) {
 </script>
 
 <template>
-    <div>
-        <div ref="chart" style="cursor: crosshair"></div>
-        <Tooltip ref="tooltip"/>
+    <div class="my-12">
+        <div>
+            <div class="roundedBox flex flex-col overflow-hidden">
+                <div class="p-4">
+                    <div class="statLabel">Current Price</div>
+                    <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
+                </div>
+                <div>
+                <div ref="chart" style="cursor: crosshair"></div>
+                    <Tooltip ref="tooltip"/>
+                </div>
+            </div>
+        </div>
+        <div ref="xAxis" class="mt-2"></div>
     </div>
 </template>
+
+<style scoped>
+div::v-deep .axis  text {
+    font-family: VCR;
+    font-size: 12px;
+}
+</style>

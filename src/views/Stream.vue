@@ -35,9 +35,6 @@ const streamEnd = computed(() => formatDate(stream.streamParams.startTime + stre
 const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocaleString())
 const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
 const streamType = computed(() => stream.isSale ? "Sale" : "Rental")
-const currentPrice = computed(() => {
-    return (stream.depositTokenUnstreamed / stream.rewardTokenRemaining).toLocaleString()
-})
 
 // TODO: Show average price after the stream ends
 const averagePrice = computed(() => {
@@ -93,13 +90,7 @@ watch(blockNumber, loadStream)
                         </div> -->
                     </div>
                 </div>
-                <div class="roundedBox flex flex-col my-12 overflow-hidden">
-                    <div class="p-4">
-                        <div class="statLabel">Current Price</div>
-                        <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
-                    </div>
-                    <Chart :stream="stream"/>
-                </div>
+                <Chart :stream="stream"/>
             </div>
             <div class="flex flex-col gap-10 lg:px-12">
                 <div class="roundedBox">
@@ -132,11 +123,6 @@ watch(blockNumber, loadStream)
 </template>
 
 <style scoped>
-
-.roundedBox {
-  border-radius: 8px;
-  background: #ffffff10;
-}
 
 .tab {
   font-family: VCR
