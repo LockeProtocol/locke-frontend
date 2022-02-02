@@ -1,18 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import type { StreamData } from '@/composables/useStreamData'
+import { format } from '@/lib/utils/format'
 
 // Props
 const props = defineProps<{
   stream: StreamData
 }>()
-
-function format(n: number): string {
-    if (isNaN(n)) return '--'
-    if (n == 0) return '0.00'
-    let decimals = Math.max(2, Math.floor(Math.log10(n)) * -1 + 1)
-    return n.toFixed(decimals)
-}
 
 const tokensLockedNow = computed(() => props.stream.userState?.netDeposits - props.stream.userState?.tokens)
 const tokensLockedEnd = computed(() => props.stream.userState?.netDeposits)

@@ -6,6 +6,7 @@ import useAllowance from '@/composables/useAllowance'
 import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
+import { format } from '@/lib/utils/format'
 import useBlockNumber from '@/composables/useBlockNumber'
 import VueCountdown from '@chenfengyuan/vue-countdown';
 
@@ -13,13 +14,6 @@ import VueCountdown from '@chenfengyuan/vue-countdown';
 const props = defineProps<{
   stream: StreamData
 }>()
-
-function format(n: number): string {
-    if (isNaN(n)) return '--'
-    if (n == 0) return '0.00'
-    let decimals = Math.max(2, Math.floor(Math.log10(n)) * -1 + 1)
-    return n.toFixed(decimals)
-}
 
 // For countdown timer
 function transformSlotProps(props: Object) {

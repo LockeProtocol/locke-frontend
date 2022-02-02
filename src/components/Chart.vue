@@ -4,12 +4,13 @@ import useChartData from '@/composables/useChartData'
 import Tooltip from '@/components/Tooltip.vue'
 import useBlockNumber from '@/composables/useBlockNumber'
 import { DateTime } from 'luxon'
+import { format } from '@/lib/utils/format'
 
 const d3 = require('d3')
 const chart = ref(null)
-const tooltip = ref(null)
 const xAxis = ref(null)
-defineExpose({chart, tooltip})
+const tooltip = ref(null)
+defineExpose({chart, xAxis, tooltip})
 
 const props = defineProps({
     stream: null
@@ -23,7 +24,13 @@ onMounted(async () => {
 })
 
 const currentPrice = computed(() => {
-    return (props.stream.depositTokenUnstreamed / props.stream.rewardTokenRemaining).toLocaleString()
+    return format(props.stream.depositTokenUnstreamed / props.stream.rewardTokenRemaining)
+})
+const averagePrice = computed(() => {
+    return format(props.stream.tokenAmounts.depositTokenAmount / props.stream.tokenAmounts.rewardTokenAmount)
+})
+const tvl = computed(() => {
+    return format(props.stream.tokenAmounts.depositTokenAmount)
 })
 
 watch(blockNumber, reloadChart)
@@ -184,9 +191,19 @@ function drawChart(el, axis, tooltip, data) {
     <div class="my-12">
         <div>
             <div class="roundedBox flex flex-col overflow-hidden">
-                <div class="p-4">
-                    <div class="statLabel">Current Price</div>
-                    <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
+                <div class="p-4 flex flex-row justify-between">
+                    <div>
+                        <div class="statLabel">Current Price</div>
+                        <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">Average Price</div>
+                        <div class="statValue">{{averagePrice}} {{stream.depositToken.symbol}}</div>
+                    </div>
+                    <div>
+                        <div class="statLabel">TVL</div>
+                        <div class="statValue">{{tvl}} {{stream.depositToken.symbol}}</div>
+                    </div>
                 </div>
                 <div>
                 <div ref="chart" style="cursor: crosshair"></div>
@@ -194,13 +211,23 @@ function drawChart(el, axis, tooltip, data) {
                 </div>
             </div>
         </div>
-        <div ref="xAxis" class="mt-2"></div>
+        <div ref="xAxis" class="mt-2 overflow-visible"></div>
     </div>
 </template>
 
 <style scoped>
-div::v-deep .axis  text {
+div:deep .axis text {
     font-family: VCR;
     font-size: 12px;
+    fill: #ffffff80;
 }
+
+div:deep .axis path {
+    stroke: none;
+}
+
+div:deep .axis {
+    overflow: visible;
+}
+
 </style>

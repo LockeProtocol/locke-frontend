@@ -36,11 +36,6 @@ const totalReward = computed(() => stream.tokenAmounts.rewardTokenAmount.toLocal
 const totalDeposited = computed(() => stream.tokenAmounts.depositTokenAmount.toLocaleString())
 const streamType = computed(() => stream.isSale ? "Sale" : "Rental")
 
-// TODO: Show average price after the stream ends
-const averagePrice = computed(() => {
-    return (stream.tokenAmounts.depositTokenAmount / stream.tokenAmounts.rewardTokenAmount).toLocaleString()
-})
-
 // Effects
 
 watchEffect(() => connected.value && loadStream())
