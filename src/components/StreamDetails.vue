@@ -40,7 +40,7 @@ const secondsUntilStart = computed(() => {
 </script>
 
 <template>
-    <div class="roundedBox py-4">
+    <div class="roundedBox">
         <div class="grid grid-cols-2" id="statsBox">
             <div>
                 <div class="statLabel">Deposit Token</div>

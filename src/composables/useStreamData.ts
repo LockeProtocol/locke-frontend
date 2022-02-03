@@ -47,8 +47,6 @@ export default function useStreamData(address: string) {
             call(streamABI, [address, 'feeParams']),
             call(streamABI, [address, 'tokenAmounts']),
             call(streamABI, [address, 'isIndefinite']),
-            // TODO: tokensNotYetStreamed needs to be replaced when smart contract 
-            // can reflect value as of current block
             call(streamABI, [address, 'tokenStreamForAccount(address)', [user]]),
             call(streamABI, [address, 'getEarned', [user]]),
             getNetDeposits(user),
@@ -92,8 +90,6 @@ export default function useStreamData(address: string) {
         }
         data.depositTokenUnstreamed = results[10] / (10 ** data.depositToken.decimals)
         data.rewardTokenRemaining = results[9] / (10 ** data.rewardToken.decimals)
-
-        console.log(data)
         loaded.value = true
     }
 
@@ -131,7 +127,6 @@ export default function useStreamData(address: string) {
         let claimEvents = await contract.queryFilter(claimFilter)
         let claims = claimEvents.map((c) => c.args?.amount)
         let totalClaims = _.reduce(claims, (sum, n) => sum.add(n), BigNumber.from(0))
-        console.log(totalClaims)
         return totalClaims
     }
 

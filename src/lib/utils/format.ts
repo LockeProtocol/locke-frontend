@@ -7,6 +7,15 @@ export function format(n: number): string {
     return n.toFixed(decimals)
 }
 
+export function formatAddress(address: string) {
+    const str1 = String(address).slice(2, 4).toUpperCase();
+    const str2 = String(address).slice(address.length - 4, address.length).toUpperCase();
+    return `0x${str1}…${str2}`;
+}
+
+export function roundBN(bn: string) {
+    return format(parseFloat(bn))
+}
 
 export function formatDate(unixTimestamp) {
     return DateTime.fromSeconds(unixTimestamp)

@@ -11,6 +11,7 @@ import ClaimReward from '@/components/ClaimReward.vue'
 import Chart from '@/components/Chart.vue'
 import PositionDetails from '@/components/PositionDetails.vue'
 import StreamDetails from '@/components/StreamDetails.vue'
+import TxHistory from '@/components/TxHistory.vue'
 
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
@@ -32,9 +33,9 @@ watch(blockNumber, loadStream)
 <template>
     <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg"  v-if="connected && loaded">
         <div class="grid grid-cols-1 lg:grid-cols-2">
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-10">
                 <h2>{{stream.depositToken.symbol}} / {{stream.rewardToken.symbol}}</h2>
-                <p class="mb-12">Deposit {{stream.depositToken.symbol}} to earn {{stream.rewardToken.symbol}} over time. Rewards are earned continuously and distributed pro rata to all depositors.</p>
+                <p>Deposit {{stream.depositToken.symbol}} to earn {{stream.rewardToken.symbol}} over time. Rewards are earned continuously and distributed pro rata to all depositors.</p>
                 <StreamDetails :stream="stream"/>
                 <Chart :stream="stream"/>
             </div>
@@ -64,6 +65,9 @@ watch(blockNumber, loadStream)
                     <ClaimReward :stream="stream"/>
                 </div>
             </div>
+            <div class="col-span-2">
+                <TxHistory :stream="stream"/>
+            </div>
         </div>
     </div>
 </template>
@@ -81,7 +85,5 @@ watch(blockNumber, loadStream)
 .tabInactive {
   background: #ffffff10;
 }
-
-
 
 </style>
