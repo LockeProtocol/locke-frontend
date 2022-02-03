@@ -87,7 +87,7 @@ function drawChart(el, axis, tooltip, data) {
         .datum(data)
         .attr("fill", "none")
         .attr("stroke", "#43E0E4")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 2)
         .attr("d", d3.line().curve(d3.curveStepAfter)
                 .x(d => x(d.date))
                 .y(d => y(d.value))
@@ -103,9 +103,6 @@ function drawChart(el, axis, tooltip, data) {
         .attr('class', 'axis axis-right')
         .attr('transform', `translate(${width-margin.left-margin.right},0)`)
         .call(d3.axisLeft(y).ticks(3).tickFormat(format))
-
-
-
 
     // var gradient = svg.append("linearGradient")
     //     .attr("id", "chartGradient")
@@ -135,7 +132,6 @@ function drawChart(el, axis, tooltip, data) {
         .append('path')
         .style("stroke", "#43E0E4")
         .style("stroke-width", "0.5px")
-        .style("stroke-dasharray", "5,5")
         .style("opacity", 0.8)
         .style("pointer-events", "none")
         .attr("d", function() {
@@ -249,7 +245,7 @@ function drawChart(el, axis, tooltip, data) {
 
 <template>
     <div class="my-12">
-        <div>
+        <div class="overflow-hidden">
             <div class="roundedBox flex flex-col">
                 <div class="p-4 flex flex-row justify-between">
                     <div>

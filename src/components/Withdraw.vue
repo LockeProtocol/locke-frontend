@@ -5,6 +5,7 @@ import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { format } from '@/lib/utils/format'
+import ErrorBox from '@/components/ErrorBox.vue'
 
 // Props
 const props = defineProps<{
@@ -98,14 +99,7 @@ const dismissError = () => {
             <div class="w-full cursor-pointer actionButton" @click="handleWithdraw">{{withdrawButtonText}}</div>
             <div class="w-full cursor-pointer actionButton" @click="handleExit">{{exitButtonText}}</div>
         </div>
-        <div class="mt-4 text-center" v-if="errorText != ''">
-            <div>
-                <div class="error">
-                    <div class="error-close" @click="dismissError">X</div>
-                    <span class="error-text">{{errorText}}</span>                    
-                </div>
-            </div>
-        </div>
+        <ErrorBox :msg="errorText" @dismissed="errorText=''"/>
     </div>
 </template>
 
@@ -113,28 +107,4 @@ const dismissError = () => {
 #withdraw .statValue {
     font-size: 14px;
 }
-
-.error {
-    font-family: VCR;
-
-    padding: 8px;
-    border-radius: 4px;
-    background: #ffffff10;
-}
-
-.error-text {
-    font-size: 12px;
-    color: #E84142;
-}
-
-.error-close {
-    float: right;
-    font-size: 12px;
-    background: #ffffff20;
-    border-radius: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
-    cursor: pointer;
-}
-
 </style>

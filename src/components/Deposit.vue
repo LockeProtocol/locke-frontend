@@ -8,6 +8,7 @@ import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { format } from '@/lib/utils/format'
 import useBlockNumber from '@/composables/useBlockNumber'
+import ErrorBox from '@/components/ErrorBox.vue'
 
 // Props
 const props = defineProps<{
@@ -15,7 +16,7 @@ const props = defineProps<{
 }>()
 
 // Refs
-// TODO: Make error box a component (from Withdraw) and add to deposit and claim as well
+const errorText = ref('')
 const depositAmount = ref('')
 const depositing = ref(false)
 const { blockNumber } = useBlockNumber()
@@ -67,7 +68,12 @@ const maxDisplay = computed(() => {
 
 const handleDeposit = async () => {
     if (depositButtonTxt.value == 'APPROVE') {
-        approveUnlimited()
+        try {
+            await approveUnlimited()
+        } catch(e: any) {
+            console.log(e)
+            errorText.value = e.message
+        }
     } else if (depositButtonTxt.value == 'DEPOSIT') {
         depositing.value = true
         try {
@@ -78,6 +84,9 @@ const handleDeposit = async () => {
                 [depositValueRaw.value])
             depositAmount.value = ''
             await tx.wait()
+        } catch(e: any) {
+            console.log(e)
+            errorText.value = e.message
         } finally {
             depositing.value = false
         }
@@ -116,6 +125,7 @@ watchEffect(() => blockNumber.value && load())
             }}</p>
         </div>
         <div class="w-full cursor-pointer actionButton" @click="handleDeposit">{{depositButtonTxt}}</div>
+        <ErrorBox :msg="errorText" @dismissed="errorText=''"/>
     </div>
 </template>
 
