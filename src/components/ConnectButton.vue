@@ -5,7 +5,7 @@ import useWeb3 from '@/services/web3/useWeb3'
 const {account, connectWallet, chainId } = useWeb3()
 
 // Computed Propertied
-const connected = computed(() => !!account.value && chainId.value == 99)
+const connected = computed(() => !!account.value && chainId.value == 10243)
 const connectBtnText = computed(() => {
     const address = account.value.toString()
     if (connected.value && address && address.length === 42) {

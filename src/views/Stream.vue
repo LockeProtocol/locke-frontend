@@ -14,7 +14,7 @@ import StreamDetails from '@/components/StreamDetails.vue'
 
 const { account, chainId } = useWeb3()
 const { blockNumber } = useBlockNumber()
-const connected = computed(() => !!account.value && chainId.value == 99)
+const connected = computed(() => !!account.value && chainId.value == 10243)
 const route = useRoute()
 const { data: stream, load: loadStream, loaded } = useStreamData(route.params.address)
 
