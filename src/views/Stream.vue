@@ -65,7 +65,7 @@ watch(blockNumber, loadStream)
                     <ClaimReward :stream="stream"/>
                 </div>
             </div>
-            <div class="col-span-2">
+            <div class="lg:col-span-2">
                 <TxHistory :stream="stream"/>
             </div>
         </div>

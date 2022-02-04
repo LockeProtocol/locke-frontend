@@ -29,16 +29,16 @@ watch(blockNumber, () => { loadEvents(props.stream) })
 
 <template>
     <div class="mt-8">
-        <div v-for="event in events" :key="event.txhash" class="flex flex-row p-4 row my-3 items-center">
+        <div v-for="event in events" :key="event.txhash" class="grid grid-cols-2 gap-2 md:flex md:flex-row p-4 row my-3 md:items-center">
             <div style="flex-basis: 20%">
                 <div class="statLabel">Date</div>
                 <div class="stat-value-small">{{DateTime.fromSeconds(event.timestamp).toFormat("LLL-dd HH:mm:ss").toUpperCase()}}</div>
-                
             </div>
             <div style="flex-basis: 20%">
-                <div class="statLabel">User</div>
-                <div class="stat-value-small">{{formatAddress(event.account)}} →</div>
+                <div class="statLabel">Transaction</div>
+                <div class="stat-value-small">{{event.txhash.substr(0,14).toUpperCase()}}… →</div>
             </div>
+
             <div style="flex-basis: 20%">
                 <div class="statLabel">Action</div>
                 <div class="stat-value-small" :class="event.action">{{event.action.toUpperCase()}}</div>
@@ -47,10 +47,11 @@ watch(blockNumber, () => { loadEvents(props.stream) })
                 <div class="statLabel">Amount</div>
                 <div class="stat-value-small" :class="event.action">{{roundBN(formatUnits(event.amount, stream.depositToken.decimals))}}</div>
             </div>
-            <div style="flex-basis: 20%">
-                <div class="statLabel">Transaction</div>
-                <div class="stat-value-small">{{event.txhash.substr(0,14).toUpperCase()}}… →</div>
+            <div  class="hidden md:block" style="flex-basis: 20%">
+                <div class="statLabel">User</div>
+                <div class="stat-value-small">{{formatAddress(event.account)}} →</div>
             </div>
+
         </div>
     </div>
 </template>
