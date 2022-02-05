@@ -14,17 +14,19 @@ const props = defineProps<{
   stream: StreamData
 }>()
 
-const resultsPerPage = 10
+// Refs
 const { loadEvents, streamEvents } = useChartData()
 const { blockNumber } = useBlockNumber()
 const { account } = useWeb3()
 const page = ref(0)
 const filter = ref(false)
 
+// Computed
 const filteredEvents = computed(() => _(streamEvents.value)
     .filter((e) => !filter.value || e.account == account.value)
     .value()
 )
+const resultsPerPage = 10
 const events = computed(() => _(filteredEvents.value)
     .orderBy('timestamp', 'desc')
     .drop(page.value * resultsPerPage)
@@ -34,14 +36,13 @@ const events = computed(() => _(filteredEvents.value)
 const showNext = computed(() => {
     return (page.value * resultsPerPage + resultsPerPage) < (filteredEvents.value?.length ?? 0)
 })
-
 const showPrev = computed(() => {
     return page.value > 0
 })
 
+// Watchers
 loadEvents(props.stream)
 watch(blockNumber, () => { loadEvents(props.stream) })
-
 </script>
 
 <template>
@@ -54,24 +55,33 @@ watch(blockNumber, () => { loadEvents(props.stream) })
         <div v-for="event in events" :key="event.txhash" class="grid grid-cols-2 gap-2 md:flex md:flex-row p-4 row my-3 md:items-center">
             <div style="flex-basis: 20%">
                 <div class="statLabel">Date</div>
-                <div class="stat-value-small">{{DateTime.fromSeconds(event.timestamp).toFormat("LLL-dd HH:mm:ss").toUpperCase()}}</div>
+                <div class="stat-value-small">
+                    {{DateTime.fromSeconds(event.timestamp).toFormat("LLL-dd HH:mm:ss").toUpperCase()}}
+                </div>
             </div>
             <div style="flex-basis: 20%">
                 <div class="statLabel">Transaction</div>
-                <div class="stat-value-small">{{event.txhash.substr(0,14).toUpperCase()}}… →</div>
+                <div class="stat-value-small">
+                    {{event.txhash.substr(0,14).toUpperCase()}}… →
+                </div>
             </div>
-
             <div style="flex-basis: 20%">
                 <div class="statLabel">Action</div>
-                <div class="stat-value-small" :class="event.action">{{event.action.toUpperCase()}}</div>
+                <div class="stat-value-small" :class="event.action">
+                    {{event.action.toUpperCase()}}
+                </div>
             </div>
             <div style="flex-basis: 20%">
                 <div class="statLabel">Amount</div>
-                <div class="stat-value-small" :class="event.action">{{roundBN(formatUnits(event.amount, stream.depositToken.decimals))}}</div>
+                <div class="stat-value-small" :class="event.action">
+                    {{roundBN(formatUnits(event.amount, stream.depositToken.decimals))}}
+                </div>
             </div>
             <div  class="hidden md:block" style="flex-basis: 20%">
                 <div class="statLabel">User</div>
-                <div class="stat-value-small">{{formatAddress(event.account)}} →</div>
+                <div class="stat-value-small">
+                    {{formatAddress(event.account)}} →
+                </div>
             </div>
         </div>
         <div class="text-right">
