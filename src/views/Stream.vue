@@ -18,6 +18,7 @@ const { blockNumber } = useBlockNumber()
 const connected = computed(() => !!account.value && chainId.value == 99)
 const route = useRoute()
 const { data: stream, load: loadStream, loaded } = useStreamData(route.params.address)
+const streamActive = computed(() => stream.streamParams.endStream > DateTime.now().toSeconds())
 
 // Refs
 
@@ -40,7 +41,7 @@ watch(blockNumber, loadStream)
                 <Chart :stream="stream"/>
             </div>
             <div class="flex flex-col gap-10 lg:px-12">
-                <div class="roundedBox">
+                <div class="roundedBox" v-if="streamActive">
                     <div class="grid grid-cols-2">
                         <div 
                             class="text-center py-4 cursor-pointer tab rounded-tl" 
@@ -59,10 +60,10 @@ watch(blockNumber, loadStream)
                     <Withdraw v-show="!depositTabActive" :stream="stream"/>
                 </div>
                 <div class="roundedBox">
-                    <PositionDetails :stream="stream"/>
+                    <ClaimReward :stream="stream"/>
                 </div>
                 <div class="roundedBox">
-                    <ClaimReward :stream="stream"/>
+                    <PositionDetails :stream="stream"/>
                 </div>
             </div>
             <div class="lg:col-span-2">
