@@ -3,6 +3,7 @@ import { watch, computed, ref } from 'vue'
 import type { StreamData } from '@/composables/useStreamData'
 import useChartData from '@/composables/useChartData'
 import useBlockNumber from '@/composables/useBlockNumber'
+import useWeb3 from '@/services/web3/useWeb3'
 import { formatAddress, roundBN } from '@/lib/utils/format'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { DateTime } from 'luxon'
@@ -16,15 +17,22 @@ const props = defineProps<{
 const resultsPerPage = 10
 const { loadEvents, streamEvents } = useChartData()
 const { blockNumber } = useBlockNumber()
+const { account } = useWeb3()
 const page = ref(0)
-const events = computed(() => _(streamEvents.value)
+const filter = ref(false)
+
+const filteredEvents = computed(() => _(streamEvents.value)
+    .filter((e) => !filter.value || e.account == account.value)
+    .value()
+)
+const events = computed(() => _(filteredEvents.value)
     .orderBy('timestamp', 'desc')
     .drop(page.value * resultsPerPage)
     .take(resultsPerPage)
     .value()
 )
 const showNext = computed(() => {
-    return (page.value * resultsPerPage + resultsPerPage) < (streamEvents.value?.length ?? 0)
+    return (page.value * resultsPerPage + resultsPerPage) < (filteredEvents.value?.length ?? 0)
 })
 
 const showPrev = computed(() => {
@@ -38,6 +46,11 @@ watch(blockNumber, () => { loadEvents(props.stream) })
 
 <template>
     <div class="mt-8">
+        <div class="text-right">
+            <span @click="filter=!filter" class="statLabel cursor-pointer">
+                {{filter ? 'Show All' : 'Show Mine'}}
+            </span>
+        </div>
         <div v-for="event in events" :key="event.txhash" class="grid grid-cols-2 gap-2 md:flex md:flex-row p-4 row my-3 md:items-center">
             <div style="flex-basis: 20%">
                 <div class="statLabel">Date</div>
