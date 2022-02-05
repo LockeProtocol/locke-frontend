@@ -30,12 +30,12 @@ export default function useChartData() {
         events.push({
             amount: 0,
             timestamp: Math.min(new Date().getTime() / 1000,
-                stream.streamParams.startTime + stream.streamParams.streamDuration - 1)
+                stream.streamParams.endStream - 1)
         })
 
         let streamStart = stream.streamParams.startTime
-        let streamDuration = stream.streamParams.streamDuration
-        let streamEnd = streamStart + streamDuration
+        let streamEnd = stream.streamParams.endStream
+        let streamDuration = streamEnd - streamStart
         let totalRewards = stream.tokenAmounts.rewardTokenAmount
 
         let history = _.reduce(events, (agg, event) => {

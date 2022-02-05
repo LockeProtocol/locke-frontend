@@ -63,7 +63,7 @@ function drawChart(el, axis, tooltip, data) {
 
     // Set up x scale
     var streamStart = props.stream.streamParams.startTime
-    var streamEnd = props.stream.streamParams.startTime + props.stream.streamParams.streamDuration
+    var streamEnd = props.stream.streamParams.endStream
     var timeElapsed = DateTime.now().toSeconds() - streamStart
     var scaleEnd = Math.min(streamStart + timeElapsed * 1.5, streamEnd)
     var dataStart = d3.extent(data.map(d => d.date))[0]

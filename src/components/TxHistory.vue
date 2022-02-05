@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, computed } from 'vue'
+import { watch, computed, ref } from 'vue'
 import type { StreamData } from '@/composables/useStreamData'
 import useChartData from '@/composables/useChartData'
 import useBlockNumber from '@/composables/useBlockNumber'
@@ -13,14 +13,23 @@ const props = defineProps<{
   stream: StreamData
 }>()
 
-
+const resultsPerPage = 10
 const { loadEvents, streamEvents } = useChartData()
 const { blockNumber } = useBlockNumber()
+const page = ref(0)
 const events = computed(() => _(streamEvents.value)
     .orderBy('timestamp', 'desc')
-    .take(10)
+    .drop(page.value * resultsPerPage)
+    .take(resultsPerPage)
     .value()
 )
+const showNext = computed(() => {
+    return (page.value * resultsPerPage + resultsPerPage) < (streamEvents.value?.length ?? 0)
+})
+
+const showPrev = computed(() => {
+    return page.value > 0
+})
 
 loadEvents(props.stream)
 watch(blockNumber, () => { loadEvents(props.stream) })
@@ -51,7 +60,10 @@ watch(blockNumber, () => { loadEvents(props.stream) })
                 <div class="statLabel">User</div>
                 <div class="stat-value-small">{{formatAddress(event.account)}} →</div>
             </div>
-
+        </div>
+        <div class="text-right">
+            <span class="cursor-pointer statValue p-2" @click="page--" v-show="showPrev">←</span>
+            <span class="cursor-pointer statValue p-2" @click="page++" v-show="showNext">→</span>
         </div>
     </div>
 </template>

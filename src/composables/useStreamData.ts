@@ -22,7 +22,7 @@ export type StreamData = {
 
 export default function useStreamData(address: string) {
 
-    const lensAddress = '0x6a59850CFD8Da4083328Fb6DC419f20132C6Ef2a'
+    const lensAddress = '0x99f287AFDd1FE84779714E6E9117eCEf1D075EF8'
     const { account, call, getProvider } = useWeb3()
     const data = reactive<StreamData>({
         address: '',
@@ -66,9 +66,9 @@ export default function useStreamData(address: string) {
         data.depositToken = tokens[1],
         data.streamParams = {
             startTime: results[2][0],
-            streamDuration: results[2][1],
-            depositLockDuration: results[2][2],
-            rewardLockDuration: results[2][3]
+            endStream: results[2][1],
+            endDepositLock: results[2][2],
+            endRewardLock: results[2][3]
         }
         data.feeParams = {
             feePercent: results[3][0],
@@ -78,7 +78,7 @@ export default function useStreamData(address: string) {
             rewardTokenAmount: results[4][0] / (10 ** data.rewardToken.decimals),
             depositTokenAmount: results[4][1] / (10 ** data.depositToken.decimals),
             rewardTokenFeeAmount: results[4][2],
-            depositTokenFeeAmount: results[4][3]
+            depositTokenFlashloanFeeAmount: results[4][3]
         }
         data.isSale = !!results[5]
         data.userState = {

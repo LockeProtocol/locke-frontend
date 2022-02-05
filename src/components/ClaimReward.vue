@@ -34,8 +34,7 @@ const errorText = ref('')
 // const avgPrice = computed(() => tokensLocked.value / rewardsEarned.value)
 const isRewardClaimable = computed(() => secondsRemaining.value <= 0)
 const secondsRemaining = computed(() => {
-    return Math.max(0,props.stream.streamParams.startTime 
-        + props.stream.streamParams.rewardLockDuration 
+    return Math.max(0,props.stream.streamParams.endRewardLock
         - DateTime.now().toSeconds())
 })
 

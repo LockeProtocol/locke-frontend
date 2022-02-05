@@ -3,8 +3,10 @@ import { DateTime } from 'luxon'
 export function format(n: number): string {
     if (isNaN(n)) return '--'
     if (n == 0) return n.toFixed(2)
+    let negative = n < 0
+    n = Math.abs(n)
     let decimals = Math.max(2, Math.floor(Math.log10(n)) * -1 + 1)
-    return n.toFixed(decimals)
+    return `${negative ? '-' : ''}${n.toFixed(decimals)}`
 }
 
 export function formatAddress(address: string) {
