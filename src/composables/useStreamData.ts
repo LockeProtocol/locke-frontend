@@ -20,10 +20,16 @@ export type StreamData = {
     rewardTokenRemaining: any
 }
 
-export default function useStreamData(address: string) {
+export default function useStreamData(address: string, web3=null as any) {
 
-    const lensAddress = '0x99f287AFDd1FE84779714E6E9117eCEf1D075EF8'
-    const { account, call, getProvider } = useWeb3()
+    const lensAddress = '0x4aF436c83A204b040C25566E0C981cbca915d2C8'
+    let account, call, getProvider
+    if (web3) {
+        ({account, call, getProvider} = web3)
+    }
+    else {
+        ({ account, call, getProvider } = useWeb3())
+    }
     const data = reactive<StreamData>({
         address: '',
         rewardToken: {},
@@ -39,6 +45,8 @@ export default function useStreamData(address: string) {
     const loaded = ref(false)
 
     async function load() {
+
+        console.log('loading')
         let user = account.value
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
