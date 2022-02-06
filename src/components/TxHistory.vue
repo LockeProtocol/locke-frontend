@@ -40,6 +40,12 @@ const showPrev = computed(() => {
     return page.value > 0
 })
 
+// Handlers
+function toggleFilter() {
+    filter.value = !filter.value
+    page.value = 0
+}
+
 // Watchers
 loadEvents(props.stream)
 watch(blockNumber, () => { loadEvents(props.stream) })
@@ -48,7 +54,7 @@ watch(blockNumber, () => { loadEvents(props.stream) })
 <template>
     <div class="mt-8">
         <div class="text-right">
-            <span @click="filter=!filter" class="statLabel cursor-pointer">
+            <span @click="toggleFilter()" class="statLabel cursor-pointer">
                 {{filter ? 'Show All' : 'Show Mine'}}
             </span>
         </div>
