@@ -24,13 +24,12 @@ function transformSlotProps(props: Object) {
 // Computed
 
 const streamStart = computed(() => formatDate(props.stream.streamParams.startTime))
-const streamEnd = computed(() => formatDate(props.stream.streamParams.startTime + props.stream.streamParams.streamDuration))
+const streamEnd = computed(() => formatDate(props.stream.streamParams.endStream))
 const totalReward = computed(() => props.stream.tokenAmounts.rewardTokenAmount.toLocaleString())
 const totalDeposited = computed(() => props.stream.tokenAmounts.depositTokenAmount.toLocaleString())
 const streamType = computed(() => props.stream.isSale ? "Sale" : "Rental")
 const secondsRemaining = computed(() => {
-    return Math.max(0, props.stream.streamParams.startTime 
-        + props.stream.streamParams.streamDuration 
+    return Math.max(0, props.stream.streamParams.endStream
         - DateTime.now().toSeconds())
 })
 const secondsUntilStart = computed(() => {
@@ -40,7 +39,7 @@ const secondsUntilStart = computed(() => {
 </script>
 
 <template>
-    <div class="roundedBox py-4">
+    <div class="roundedBox">
         <div class="grid grid-cols-2" id="statsBox">
             <div>
                 <div class="statLabel">Deposit Token</div>

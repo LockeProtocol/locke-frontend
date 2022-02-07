@@ -6,7 +6,7 @@ import useAllowance from '@/composables/useAllowance'
 import useWeb3 from '@/services/web3/useWeb3'
 import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
-import { format } from '@/lib/utils/format'
+import { format, roundBN } from '@/lib/utils/format'
 import useBlockNumber from '@/composables/useBlockNumber'
 import ErrorBox from '@/components/ErrorBox.vue'
 
@@ -61,7 +61,7 @@ const depositButtonTxt = computed(() => {
 })
 
 const maxDisplay = computed(() => {
-    return formatUnits(balance.value, props.stream.depositToken.decimals)
+    return roundBN(formatUnits(balance.value, props.stream.depositToken.decimals))
 })
 
 // Handlers

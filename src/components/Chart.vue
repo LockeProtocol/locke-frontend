@@ -63,7 +63,7 @@ function drawChart(el, axis, tooltip, data) {
 
     // Set up x scale
     var streamStart = props.stream.streamParams.startTime
-    var streamEnd = props.stream.streamParams.startTime + props.stream.streamParams.streamDuration
+    var streamEnd = props.stream.streamParams.endStream
     var timeElapsed = DateTime.now().toSeconds() - streamStart
     var scaleEnd = Math.min(streamStart + timeElapsed * 1.5, streamEnd)
     var dataStart = d3.extent(data.map(d => d.date))[0]
@@ -96,6 +96,7 @@ function drawChart(el, axis, tooltip, data) {
     // Add the axes
     d3.select(axis).append("svg")
         .attr("width", "100%")
+        .attr("height", "40")
         .attr('class', 'axis')
         .call(d3.axisBottom(x).ticks(4))
 
@@ -244,27 +245,25 @@ function drawChart(el, axis, tooltip, data) {
 </script>
 
 <template>
-    <div class="my-12">
-        <div class="overflow-hidden">
-            <div class="roundedBox flex flex-col">
-                <div class="p-4 flex flex-row justify-between">
-                    <div>
-                        <div class="statLabel">Current Price</div>
-                        <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">Average Price</div>
-                        <div class="statValue">{{averagePrice}} {{stream.depositToken.symbol}}</div>
-                    </div>
-                    <div>
-                        <div class="statLabel">TVL</div>
-                        <div class="statValue">{{tvl}} {{stream.depositToken.symbol}}</div>
-                    </div>
+    <div>
+        <div class="roundedBox flex flex-col">
+            <div class="p-4 flex flex-row justify-between">
+                <div>
+                    <div class="statLabel">Current Price</div>
+                    <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
                 </div>
                 <div>
-                <div ref="chart" style="cursor: crosshair"></div>
-                    <Tooltip ref="tooltip"/>
+                    <div class="statLabel">Average Price</div>
+                    <div class="statValue">{{averagePrice}} {{stream.depositToken.symbol}}</div>
                 </div>
+                <div>
+                    <div class="statLabel">TVL</div>
+                    <div class="statValue">{{tvl}} {{stream.depositToken.symbol}}</div>
+                </div>
+            </div>
+            <div>
+            <div ref="chart" style="cursor: crosshair"></div>
+                <Tooltip ref="tooltip"/>
             </div>
         </div>
         <div ref="xAxis" class="mt-2 overflow-visible"></div>

@@ -10,10 +10,55 @@
         "internalType": "address",
         "name": "_emergency_governor",
         "type": "address"
+      },
+      {
+        "internalType": "contract StreamCreation",
+        "name": "_streamCreation",
+        "type": "address"
+      },
+      {
+        "internalType": "contract MerkleStreamCreation",
+        "name": "_merkleStreamCreation",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "DeployFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "GovParamsError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LockDurationError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotGov",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPending",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StartTimeError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StreamDurationError",
+    "type": "error"
   },
   {
     "anonymous": false,
@@ -32,7 +77,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "internalType": "struct IStreamFactory.GovernableFeeParams",
         "name": "oldParams",
         "type": "tuple"
       },
@@ -50,7 +95,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "internalType": "struct IStreamFactory.GovernableFeeParams",
         "name": "newParams",
         "type": "tuple"
       }
@@ -139,10 +184,15 @@
             "internalType": "uint32",
             "name": "minStreamDuration",
             "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStartDelay",
+            "type": "uint32"
           }
         ],
         "indexed": false,
-        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "internalType": "struct IStreamFactory.GovernableStreamParams",
         "name": "oldParams",
         "type": "tuple"
       },
@@ -167,10 +217,15 @@
             "internalType": "uint32",
             "name": "minStreamDuration",
             "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStartDelay",
+            "type": "uint32"
           }
         ],
         "indexed": false,
-        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "internalType": "struct IStreamFactory.GovernableStreamParams",
         "name": "newParams",
         "type": "tuple"
       }
@@ -226,14 +281,68 @@
       },
       {
         "internalType": "bool",
-        "name": "isSale",
+        "name": "isIndefinite",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "createStream",
+    "outputs": [
+      {
+        "internalType": "contract IMerkleStream",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "rewardToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "depositToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "startTime",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "streamDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "depositLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "rewardLockDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bool",
+        "name": "isIndefinite",
         "type": "bool"
       }
     ],
     "name": "createStream",
     "outputs": [
       {
-        "internalType": "contract Stream",
+        "internalType": "contract IStream",
         "name": "",
         "type": "address"
       }
@@ -249,19 +358,6 @@
         "internalType": "uint64",
         "name": "",
         "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "emergency_gov",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -300,20 +396,10 @@
   },
   {
     "inputs": [],
-    "name": "governorship",
+    "name": "merkleStreamCreation",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
+        "internalType": "contract IMerkleStreamCreation",
         "name": "",
         "type": "address"
       }
@@ -322,16 +408,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "pendingGov",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "who",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "setEmergencyGov",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -349,7 +435,20 @@
   },
   {
     "inputs": [],
-    "name": "streamParams",
+    "name": "streamCreation",
+    "outputs": [
+      {
+        "internalType": "contract IStreamCreation",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "streamCreationParams",
     "outputs": [
       {
         "internalType": "uint32",
@@ -369,6 +468,11 @@
       {
         "internalType": "uint32",
         "name": "minStreamDuration",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minStartDelay",
         "type": "uint32"
       }
     ],
@@ -390,7 +494,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct StreamFactory.GovernableFeeParams",
+        "internalType": "struct IStreamFactory.GovernableFeeParams",
         "name": "newFeeParams",
         "type": "tuple"
       }
@@ -423,9 +527,14 @@
             "internalType": "uint32",
             "name": "minStreamDuration",
             "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minStartDelay",
+            "type": "uint32"
           }
         ],
-        "internalType": "struct StreamFactory.GovernableStreamParams",
+        "internalType": "struct IStreamFactory.GovernableStreamParams",
         "name": "newParams",
         "type": "tuple"
       }

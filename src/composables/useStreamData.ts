@@ -20,10 +20,21 @@ export type StreamData = {
     rewardTokenRemaining: any
 }
 
-export default function useStreamData(address: string) {
+export default function useStreamData(address: string, web3=null as any) {
 
+<<<<<<< HEAD
     const lensAddress = '0xA15d60334013D2718824f604788be06622dab8Ce'
     const { account, call, getProvider } = useWeb3()
+=======
+    const lensAddress = '0x4aF436c83A204b040C25566E0C981cbca915d2C8'
+    let account, call, getProvider
+    if (web3) {
+        ({account, call, getProvider} = web3)
+    }
+    else {
+        ({ account, call, getProvider } = useWeb3())
+    }
+>>>>>>> main
     const data = reactive<StreamData>({
         address: '',
         rewardToken: {},
@@ -39,6 +50,8 @@ export default function useStreamData(address: string) {
     const loaded = ref(false)
 
     async function load() {
+
+        console.log('loading')
         let user = account.value
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),
@@ -47,8 +60,6 @@ export default function useStreamData(address: string) {
             call(streamABI, [address, 'feeParams']),
             call(streamABI, [address, 'tokenAmounts']),
             call(streamABI, [address, 'isIndefinite']),
-            // TODO: tokensNotYetStreamed needs to be replaced when smart contract 
-            // can reflect value as of current block
             call(streamABI, [address, 'tokenStreamForAccount(address)', [user]]),
             call(streamABI, [address, 'getEarned', [user]]),
             getNetDeposits(user),
@@ -68,9 +79,9 @@ export default function useStreamData(address: string) {
         data.depositToken = tokens[1],
         data.streamParams = {
             startTime: results[2][0],
-            streamDuration: results[2][1],
-            depositLockDuration: results[2][2],
-            rewardLockDuration: results[2][3]
+            endStream: results[2][1],
+            endDepositLock: results[2][2],
+            endRewardLock: results[2][3]
         }
         data.feeParams = {
             feePercent: results[3][0],
@@ -80,7 +91,7 @@ export default function useStreamData(address: string) {
             rewardTokenAmount: results[4][0] / (10 ** data.rewardToken.decimals),
             depositTokenAmount: results[4][1] / (10 ** data.depositToken.decimals),
             rewardTokenFeeAmount: results[4][2],
-            depositTokenFeeAmount: results[4][3]
+            depositTokenFlashloanFeeAmount: results[4][3]
         }
         data.isSale = !!results[5]
         data.userState = {
@@ -92,8 +103,6 @@ export default function useStreamData(address: string) {
         }
         data.depositTokenUnstreamed = results[10] / (10 ** data.depositToken.decimals)
         data.rewardTokenRemaining = results[9] / (10 ** data.rewardToken.decimals)
-
-        console.log(data)
         loaded.value = true
     }
 
@@ -131,7 +140,6 @@ export default function useStreamData(address: string) {
         let claimEvents = await contract.queryFilter(claimFilter)
         let claims = claimEvents.map((c) => c.args?.amount)
         let totalClaims = _.reduce(claims, (sum, n) => sum.add(n), BigNumber.from(0))
-        console.log(totalClaims)
         return totalClaims
     }
 

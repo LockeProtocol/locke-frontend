@@ -1,57 +1,28 @@
 <script lang="ts" setup>
-import { DateTime } from 'luxon'
+import { computed, watchEffect } from 'vue'
+import { DateTime, Duration } from 'luxon'
 import _ from 'lodash'
-const streamData = [
-    {
-        depositToken: 'DTB',
-        rewardToken: 'DTA',
-        rewardTokenAmount: 1000,
-        tvl: 2000,
-        price: 2.0,
-        streamStart: DateTime.fromISO('2022-01-15T11:31:00'),
-        streamEnd: DateTime.fromISO('2022-01-17T11:31:00'),
-    },
-    {
-        depositToken: 'USDC',
-        rewardToken: 'LOCKE',
-        rewardTokenAmount: 1000000,
-        tvl: 186282.39,
-        price: 0.22,
-        streamStart: DateTime.fromISO('2022-01-17T10:00:00'),
-        streamEnd: DateTime.fromISO('2022-01-18T10:00:00'),
+import useStreamList from '@/composables/useStreamList'
+import useWeb3 from '@/services/web3/useWeb3'
 
-    },
-    {
-        depositToken: 'ETH',
-        rewardToken: '$DOG',
-        rewardTokenAmount: 200000,
-        tvl: 0,
-        price: null,
-        streamStart: DateTime.fromISO('2022-01-20T12:00:00'),
-        streamEnd: DateTime.fromISO('2022-01-21T12:00:00'),
-    },
-    {
-        depositToken: 'FRAX',
-        rewardToken: 'TEMPLE',
-        rewardTokenAmount: 100000,
-        tvl: 112508,
-        price: 1.13,
-        streamStart: DateTime.fromISO('2022-01-14T00:00:00'),
-        streamEnd: DateTime.fromISO('2022-01-15T00:00:00'),
-    },
-]
+const { account, chainId } = useWeb3()
+const { data: streamList, loaded, load } = useStreamList('0xde6DF28C8C06268fDf4D88B5d1E11BA618840C73')
+const connected = computed(() => !!account.value && chainId.value == 99)
+const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamEnd'], ['desc']))
 
-const streams = _.orderBy(streamData.map(s => ({
-    depositToken: s.depositToken,
-    rewardToken: s.rewardToken,
-    rewardTokenAmount: s.rewardTokenAmount,
-    tvl: s.tvl,
-    price: s.price,
-    streamStart: s.streamStart,
-    streamEnd: s.streamEnd,
-    status: DateTime.now() > s.streamEnd ? 'completed' : DateTime.now() > s.streamStart ? 'active' : 'upcoming'
-})), ['streamEnd'], ['desc'])
+function getStreamStatus(stream) {
+    return DateTime.now().toSeconds() > stream.streamParams.endStream ? 'completed' 
+        : DateTime.now().toSeconds() > stream.streamParams.startTime ? 'active' 
+        : 'upcoming'
+}
 
+function getDepositLockDuration(stream) {
+    if (stream.isSale) return '∞'
+    return DateTime.fromSeconds(stream.streamParams.endDepositLock)
+        .toRelative({base: DateTime.fromSeconds(stream.streamParams.endStream)})
+}
+
+watchEffect(() => connected.value && load())
 </script>
 
 <template>
@@ -63,46 +34,31 @@ const streams = _.orderBy(streamData.map(s => ({
         <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4">
             <div style="flex-basis: 20%">
                 <div class="statLabel">Reward / Deposit Token</div>
-                <div class="statValue">{{stream.rewardToken}} / {{stream.depositToken}}</div>
-                <div :class="['status', stream.status]">{{stream.status.toUpperCase()}}</div>
+                <div class="statValue">{{stream.rewardToken.symbol}} / {{stream.depositToken.symbol}}</div>
+                <div :class="['status', getStreamStatus(stream)]">{{getStreamStatus(stream).toUpperCase()}}</div>
             </div>
             <div style="flex-basis: 20%">
                 <div class="statLabel">Reward</div>
-                <div class="statValue">{{stream.rewardTokenAmount}} {{stream.rewardToken}}</div>
+                <div class="statValue">{{stream.tokenAmounts.rewardTokenAmount}} {{stream.rewardToken.symbol}}</div>
             </div>
             <div style="flex-basis: 20%">
                 <div class="statLabel">TVL</div>
-                <div class="statValue">{{stream.tvl}} {{stream.depositToken}}</div>
+                <div class="statValue">{{stream.tokenAmounts.depositTokenAmount}} {{stream.depositToken.symbol}}</div>
             </div>
             <div style="flex-basis: 20%">
-                <div class="statLabel">Price</div>
-                <div class="statValue">{{stream.price?.toFixed(2) ?? '---'}} {{stream.depositToken}}</div>
+                <div class="statLabel">Lock Duration</div>
+                <div class="statValue">{{getDepositLockDuration(stream)}}</div>
             </div>
             <div style="flex-basis: 20%">
                 <div class="statLabel">Stream Start / End</div>
-                <div class="statValue small">{{stream.streamStart.toLocaleString(DateTime.DATETIME_SHORT)}} -</div>
-                <div class="statValue small">{{stream.streamEnd.toLocaleString(DateTime.DATETIME_SHORT)}}</div>
+                <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.startTime).toLocaleString(DateTime.DATETIME_SHORT)}} -</div>
+                <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.endStream).toLocaleString(DateTime.DATETIME_SHORT)}}</div>
             </div>
         </div>
-        <!-- <ul class="flex flex-row flex-wrap gap-10 justify-center">
-            <li>
-                <h2>DTB / DTA</h2>
-            </li>
-            <li>Test</li>
-            <li>Test</li>
-        </ul> -->
     </div>
 </template>
 
 <style scoped>
-li {
-    width: 250px;
-    height: 400px;
-    border-radius: 8px;
-    background: #ffffff10;
-    padding: 10px;
-    cursor: pointer;
-}
 
 .status {
     font-family: VCR;

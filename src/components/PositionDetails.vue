@@ -30,6 +30,7 @@ const avgPriceEnd = computed(() => {
 
 <template>
     <div class="p-8">
+        <h2>YOUR POSITION</h2>
         <div class="grid grid-cols-3 gap-2">
             <div></div>
             <div class="statLabel">Now</div>
