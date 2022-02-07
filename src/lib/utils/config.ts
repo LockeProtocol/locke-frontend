@@ -1,5 +1,5 @@
 export default  {
-    chainId: 99,
-    factory: '0x46b54058092eD7Bceb7c0538220f20265B0bd839',
-    lens: '0x08c0B0227D33E79117EAF7c6F05B4435dA1159e2'
+    chainId: 10243,
+    factory: '0x104C0f26f91Fa6758F4a64E8C64dd409a9ea4151',
+    lens: '0xe2C5daaC7104dc097c1AE0dFE6A09Ff14efFd49A'
 }
