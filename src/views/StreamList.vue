@@ -4,9 +4,11 @@ import { DateTime, Duration } from 'luxon'
 import _ from 'lodash'
 import useStreamList from '@/composables/useStreamList'
 import useWeb3 from '@/services/web3/useWeb3'
+import { useRouter } from 'vue-router'
 
 const { account, chainId } = useWeb3()
-const { data: streamList, loaded, load } = useStreamList('0xde6DF28C8C06268fDf4D88B5d1E11BA618840C73')
+const router = useRouter()
+const { data: streamList, loaded, load } = useStreamList('0x46b54058092eD7Bceb7c0538220f20265B0bd839')
 const connected = computed(() => !!account.value && chainId.value == 99)
 const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamEnd'], ['desc']))
 
@@ -31,7 +33,7 @@ watchEffect(() => connected.value && load())
             <div class="dropdown">SORT</div>
             <div class="dropdown">FILTER</div>
         </div>
-        <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4">
+        <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4" @click="router.push({name: 'Stream', params: {address: stream.address}})">
             <div style="flex-basis: 20%">
                 <div class="statLabel">Reward / Deposit Token</div>
                 <div class="statValue">{{stream.rewardToken.symbol}} / {{stream.depositToken.symbol}}</div>
