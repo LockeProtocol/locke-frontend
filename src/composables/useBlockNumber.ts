@@ -9,7 +9,7 @@ export default function useBlockNumber() {
     const { provider, getProvider } = useWeb3()
     if (!listenerAttached && provider.value) {
         console.log('attaching block listener')
-        provider.value.on('block', _.throttle((block) => {
+        getProvider().on('block', _.throttle((block) => {
             console.log('New Block', block)
             blockNumber.value = block
         }, 2000))

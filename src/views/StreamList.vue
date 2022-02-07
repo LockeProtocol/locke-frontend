@@ -4,10 +4,17 @@ import { DateTime, Duration } from 'luxon'
 import _ from 'lodash'
 import useStreamList from '@/composables/useStreamList'
 import useWeb3 from '@/services/web3/useWeb3'
+import { useRouter } from 'vue-router'
+import NotConnected from '@/components/NotConnected.vue'
+import WrongNetwork from '@/components/WrongNetwork.vue'
+import Loading from '@/components/Loading.vue'
+import { format } from '@/lib/utils/format'
+import config from '@/lib/utils/config'
 
-const { account, chainId } = useWeb3()
-const { data: streamList, loaded, load } = useStreamList('0x104C0f26f91Fa6758F4a64E8C64dd409a9ea4151')
-const connected = computed(() => !!account.value && chainId.value == 10243)
+const { account, chainId, walletState } = useWeb3()
+const router = useRouter()
+const { data: streamList, loaded, load } = useStreamList(config.factory)
+const connected = computed(() => !!account.value && chainId.value == config.chainId)
 const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamEnd'], ['desc']))
 
 function getStreamStatus(stream) {
@@ -26,33 +33,40 @@ watchEffect(() => connected.value && load())
 </script>
 
 <template>
-    <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg">
-        <div class="flex flex-row p-4 my-4 justify-end gap-4">
-            <div class="dropdown">SORT</div>
-            <div class="dropdown">FILTER</div>
+    <div>
+        <NotConnected/>
+        <WrongNetwork/>
+        <div class="text-center mt-10" v-if="walletState=='connecting' || (connected && !loaded)">
+            <Loading/>
         </div>
-        <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4">
-            <div style="flex-basis: 20%">
-                <div class="statLabel">Reward / Deposit Token</div>
-                <div class="statValue">{{stream.rewardToken.symbol}} / {{stream.depositToken.symbol}}</div>
-                <div :class="['status', getStreamStatus(stream)]">{{getStreamStatus(stream).toUpperCase()}}</div>
+        <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg" v-if="connected && loaded">
+            <div class="flex flex-row p-4 my-4 justify-end gap-4">
+                <div class="dropdown">SORT</div>
+                <div class="dropdown">FILTER</div>
             </div>
-            <div style="flex-basis: 20%">
-                <div class="statLabel">Reward</div>
-                <div class="statValue">{{stream.tokenAmounts.rewardTokenAmount}} {{stream.rewardToken.symbol}}</div>
-            </div>
-            <div style="flex-basis: 20%">
-                <div class="statLabel">TVL</div>
-                <div class="statValue">{{stream.tokenAmounts.depositTokenAmount}} {{stream.depositToken.symbol}}</div>
-            </div>
-            <div style="flex-basis: 20%">
-                <div class="statLabel">Lock Duration</div>
-                <div class="statValue">{{getDepositLockDuration(stream)}}</div>
-            </div>
-            <div style="flex-basis: 20%">
-                <div class="statLabel">Stream Start / End</div>
-                <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.startTime).toLocaleString(DateTime.DATETIME_SHORT)}} -</div>
-                <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.endStream).toLocaleString(DateTime.DATETIME_SHORT)}}</div>
+            <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4" @click="router.push({name: 'Stream', params: {address: stream.address}})">
+                <div style="flex-basis: 20%">
+                    <div class="statLabel">Reward / Deposit Token</div>
+                    <div class="statValue">{{stream.rewardToken.symbol}} / {{stream.depositToken.symbol}}</div>
+                    <div :class="['status', getStreamStatus(stream)]">{{getStreamStatus(stream).toUpperCase()}}</div>
+                </div>
+                <div style="flex-basis: 20%">
+                    <div class="statLabel">Reward</div>
+                    <div class="statValue">{{format(stream.tokenAmounts.rewardTokenAmount)}} {{stream.rewardToken.symbol}}</div>
+                </div>
+                <div style="flex-basis: 20%">
+                    <div class="statLabel">TVL</div>
+                    <div class="statValue">{{format(stream.tokenAmounts.depositTokenAmount)}} {{stream.depositToken.symbol}}</div>
+                </div>
+                <div style="flex-basis: 20%">
+                    <div class="statLabel">Lock Duration</div>
+                    <div class="statValue">{{getDepositLockDuration(stream)}}</div>
+                </div>
+                <div style="flex-basis: 20%">
+                    <div class="statLabel">Stream Start / End</div>
+                    <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.startTime).toLocaleString(DateTime.DATETIME_SHORT)}} -</div>
+                    <div class="statValue small">{{DateTime.fromSeconds(stream.streamParams.endStream).toLocaleString(DateTime.DATETIME_SHORT)}}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -103,6 +117,11 @@ watchEffect(() => connected.value && load())
 .row {
     border-radius: 8px;
     background: #ffffff10;
+    transition: 0.3s;
+}
+
+.row:hover {
+    background: #007CF980;
 }
 
 .statValue.small {

@@ -6,6 +6,7 @@ import erc20 from '@/lib/abi/erc20-abi.json'
 import { Contract } from '@ethersproject/contracts'
 import _ from 'lodash'
 import { BigNumber } from '@ethersproject/bignumber'
+import config from '@/lib/utils/config'
 
 export type StreamData = {
     address: any,
@@ -22,8 +23,7 @@ export type StreamData = {
 
 export default function useStreamData(address: string, web3=null as any) {
 
-    const lensAddress = '0xe2C5daaC7104dc097c1AE0dFE6A09Ff14efFd49A'
-
+    const lensAddress = config.lens
     let account, call, getProvider
     if (web3) {
         ({account, call, getProvider} = web3)
@@ -47,8 +47,6 @@ export default function useStreamData(address: string, web3=null as any) {
     const loaded = ref(false)
 
     async function load() {
-
-        console.log('loading')
         let user = account.value
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),

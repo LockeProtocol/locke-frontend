@@ -27,14 +27,15 @@ body,
     font-family: VCR;
     font-size: 16px;
     border-radius: 4px;
-    background: #ffffff10;
+    background: #007CF980;
     padding: 16px;
     text-align: center;
     line-height: 24px;
+    transition: 0.3s;
 }
   
 .actionButton:hover {
-    background: rgba(46, 186, 198, 0.08);
+    background: #007CF9;
 }
   
 p {
@@ -46,7 +47,9 @@ h2 {
     font-family: VCR;
     font-size: 18px;
     margin-bottom: 16px;
-    color: #fff;
+    color: #ffffff;
+    opacity: 0.7
+    // font-weight: 800;
 }
 
 .statLabel {

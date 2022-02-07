@@ -1,17 +1,18 @@
 <script setup>
 import { computed } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
+import config from '@/lib/utils/config'
 
 const {account, connectWallet, chainId } = useWeb3()
 
 // Computed Propertied
-const connected = computed(() => !!account.value && chainId.value == 10243)
+const connected = computed(() => !!account.value && chainId.value == config.chainId)
 const connectBtnText = computed(() => {
     const address = account.value.toString()
     if (connected.value && address && address.length === 42) {
         const str1 = String(address).slice(2, 6).toUpperCase();
         const str2 = String(address).slice(address.length - 4, address.length).toUpperCase();
-        return `0x${str1}...${str2}`;
+        return `0x${str1}…${str2}`;
     } else {
         return "CONNECT WALLET"
     }
@@ -52,6 +53,6 @@ function handleConnect() {
   height: 8px;
   border-radius: 4px;
   margin-right: 8px;
-  background: rgb(22, 206, 185)
+  background: #43E0E4;
 }
 </style>
