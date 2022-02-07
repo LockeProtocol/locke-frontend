@@ -1,11 +1,12 @@
 <script setup>
 import { computed } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
+import config from '@/lib/utils/config'
 
 const {account, connectWallet, chainId } = useWeb3()
 
 // Computed Propertied
-const connected = computed(() => !!account.value && chainId.value == 99)
+const connected = computed(() => !!account.value && chainId.value == config.chainId)
 const connectBtnText = computed(() => {
     const address = account.value.toString()
     if (connected.value && address && address.length === 42) {
