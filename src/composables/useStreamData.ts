@@ -22,7 +22,7 @@ export type StreamData = {
 
 export default function useStreamData(address: string, web3=null as any) {
 
-    const lensAddress = '0x4aF436c83A204b040C25566E0C981cbca915d2C8'
+    const lensAddress = '0x08c0B0227D33E79117EAF7c6F05B4435dA1159e2'
     let account, call, getProvider
     if (web3) {
         ({account, call, getProvider} = web3)
@@ -45,8 +45,6 @@ export default function useStreamData(address: string, web3=null as any) {
     const loaded = ref(false)
 
     async function load() {
-
-        console.log('loading')
         let user = account.value
         let results = await Promise.all([
             call(streamABI, [address, 'rewardToken']),

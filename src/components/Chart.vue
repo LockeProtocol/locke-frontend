@@ -271,21 +271,22 @@ function drawChart(el, axis, tooltip, data) {
 </template>
 
 <style scoped>
-div:deep .axis text {
+:deep(div) .axis text {
     font-family: VCR;
     font-size: 12px;
     fill: #ffffff80;
 }
 
-div:deep .axis path, div:deep .axis-right line {
+:deep(div) .axis path, 
+:deep(div) .axis-right line {
     stroke: none;
 }
 
-div:deep .axis {
+:deep(div) .axis {
     overflow: visible;
 }
 
-div:deep svg {
+:deep(div) svg {
     overflow: visible
 }
 
