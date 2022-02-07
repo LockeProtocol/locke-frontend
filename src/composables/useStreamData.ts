@@ -22,19 +22,16 @@ export type StreamData = {
 
 export default function useStreamData(address: string, web3=null as any) {
 
-<<<<<<< HEAD
-    const lensAddress = '0xA15d60334013D2718824f604788be06622dab8Ce'
-    const { account, call, getProvider } = useWeb3()
-=======
-    const lensAddress = '0x4aF436c83A204b040C25566E0C981cbca915d2C8'
+    const lensAddress = '0xe2C5daaC7104dc097c1AE0dFE6A09Ff14efFd49A'
+
     let account, call, getProvider
     if (web3) {
         ({account, call, getProvider} = web3)
     }
     else {
+        // TODO: fix this, pass in web3 always
         ({ account, call, getProvider } = useWeb3())
     }
->>>>>>> main
     const data = reactive<StreamData>({
         address: '',
         rewardToken: {},

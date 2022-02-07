@@ -6,8 +6,8 @@ import useStreamList from '@/composables/useStreamList'
 import useWeb3 from '@/services/web3/useWeb3'
 
 const { account, chainId } = useWeb3()
-const { data: streamList, loaded, load } = useStreamList('0xde6DF28C8C06268fDf4D88B5d1E11BA618840C73')
-const connected = computed(() => !!account.value && chainId.value == 99)
+const { data: streamList, loaded, load } = useStreamList('0x104C0f26f91Fa6758F4a64E8C64dd409a9ea4151')
+const connected = computed(() => !!account.value && chainId.value == 10243)
 const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamEnd'], ['desc']))
 
 function getStreamStatus(stream) {
