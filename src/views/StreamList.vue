@@ -15,7 +15,11 @@ const { account, chainId, walletState } = useWeb3()
 const router = useRouter()
 const { data: streamList, loaded, load } = useStreamList(config.factory)
 const connected = computed(() => !!account.value && chainId.value == config.chainId)
-const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamParams.endStream'], ['desc']))
+const streams = computed(() => _(streamList.value ?? [])
+    .orderBy(['streamParams.endStream'], ['desc'])
+    .filter((s) => s.streamParams.endStream > DateTime.fromISO('2022-02-08T12:08:00').toSeconds())
+    .value()
+)
 
 function getStreamStatus(stream) {
     return DateTime.now().toSeconds() > stream.streamParams.endStream ? 'completed' 
