@@ -8,14 +8,14 @@ import { useRouter } from 'vue-router'
 import NotConnected from '@/components/NotConnected.vue'
 import WrongNetwork from '@/components/WrongNetwork.vue'
 import Loading from '@/components/Loading.vue'
-import { format } from '@/lib/utils/format'
+import { format, humanDuration } from '@/lib/utils/format'
 import config from '@/lib/utils/config'
 
 const { account, chainId, walletState } = useWeb3()
 const router = useRouter()
 const { data: streamList, loaded, load } = useStreamList(config.factory)
 const connected = computed(() => !!account.value && chainId.value == config.chainId)
-const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamEnd'], ['desc']))
+const streams = computed(() => _.orderBy((streamList.value ?? []), ['streamParams.endStream'], ['desc']))
 
 function getStreamStatus(stream) {
     return DateTime.now().toSeconds() > stream.streamParams.endStream ? 'completed' 
@@ -25,8 +25,10 @@ function getStreamStatus(stream) {
 
 function getDepositLockDuration(stream) {
     if (stream.isSale) return '∞'
-    return DateTime.fromSeconds(stream.streamParams.endDepositLock)
-        .toRelative({base: DateTime.fromSeconds(stream.streamParams.endStream)})
+    let seconds = stream.streamParams.endDepositLock - stream.streamParams.endStream;
+    if (seconds == 0) return '--'
+    let duration = Duration.fromObject({seconds: seconds})
+    return humanDuration(duration).toUpperCase()
 }
 
 watchEffect(() => connected.value && load())

@@ -59,7 +59,7 @@ const handleClaim = async () => {
     <div id="claim-reward" class="mx-auto p-8 flex flex-col">
         <h2 class="label">CLAIM REWARDS</h2>
         <div class="w-full cursor-pointer actionButton" @click="handleClaim" v-if="isRewardClaimable">CLAIM {{format(stream.userState?.rewardsClaimable)}} {{stream.rewardToken.symbol}}</div>
-        <div class="w-full cursor-not-allowed actionButton" v-else>
+        <div class="w-full cursor-not-allowed actionButton buttonDisabled" v-else>
             <vue-countdown :time="secondsRemaining * 1000" :transform="transformSlotProps" v-slot="{ days, hours, minutes, seconds }">
                 {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }} REMAINING
             </vue-countdown> 
@@ -71,5 +71,8 @@ const handleClaim = async () => {
 <style scoped>
 #claim-reward .statValue {
     font-size: 12px;
+}
+.buttonDisabled {
+    background: #ffffff10;
 }
 </style>

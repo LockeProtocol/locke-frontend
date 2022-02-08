@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 
 export function format(n: number): string {
     if (isNaN(n)) return '--'
@@ -22,6 +22,22 @@ export function roundBN(bn: string) {
 export function formatDate(unixTimestamp) {
     return DateTime.fromSeconds(unixTimestamp)
         .toLocaleString(DateTime.DATETIME_SHORT)
+}
+
+const units = [
+    'year',
+    'month',
+    'week',
+    'day',
+    'hour',
+    'minute',
+    'second',
+  ];
+  
+export function humanDuration(duration: Duration) {
+    const diff = duration.shiftTo(...units);
+    const unit = units.find((unit) => diff.get(unit) !== 0) || 'second';
+    return Duration.fromObject({[unit]: Math.trunc(duration.as(unit))}).toHuman()
 }
 
 export default {

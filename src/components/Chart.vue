@@ -24,21 +24,38 @@ onMounted(async () => {
 })
 
 const currentPrice = computed(() => {
-    return format(props.stream.depositTokenUnstreamed / props.stream.rewardTokenRemaining)
+    return props.stream.depositTokenUnstreamed / props.stream.rewardTokenRemaining
 })
 const averagePrice = computed(() => {
-    return format((props.stream.tokenAmounts.depositTokenAmount - props.stream.depositTokenUnstreamed)
-     / (props.stream.tokenAmounts.rewardTokenAmount - props.stream.rewardTokenRemaining))
+    return (props.stream.tokenAmounts.depositTokenAmount - props.stream.depositTokenUnstreamed)
+     / (props.stream.tokenAmounts.rewardTokenAmount - props.stream.rewardTokenRemaining)
+})
+const rewardPerToken = computed(() => {
+    return 1 / currentPrice.value
+})
+const averageRewardPerToken = computed(() => {
+    return 1 / averagePrice.value
 })
 const tvl = computed(() => {
     return format(props.stream.tokenAmounts.depositTokenAmount)
+})
+const rewardPerTokenHistory = computed(() => {
+    return priceHistory.value.map(d => ({
+        date: d.date,
+        value: d.value == 0 ? undefined : 1 / d.value
+    }))
+    // TODO: Insert a datapoint just before each undefined with the date of n and value of n-1
 })
 
 watch(blockNumber, reloadChart)
 
 async function reloadChart() {
     await loadHistory(props.stream)
-    drawChart(chart.value, xAxis.value, tooltip.value.$el, priceHistory.value)
+    drawChart(
+        chart.value, 
+        xAxis.value, 
+        tooltip.value.$el, 
+        props.stream.isSale ? priceHistory.value : rewardPerTokenHistory.value)
 }
 
 function drawChart(el, axis, tooltip, data) {
@@ -89,8 +106,9 @@ function drawChart(el, axis, tooltip, data) {
         .attr("stroke", "#43E0E4")
         .attr("stroke-width", 2)
         .attr("d", d3.line().curve(d3.curveStepAfter)
-                .x(d => x(d.date))
                 .y(d => y(d.value))
+                .defined(d => y(d.value))
+                .x(d => x(d.date))
                 )
 
     // Add the axes
@@ -104,26 +122,6 @@ function drawChart(el, axis, tooltip, data) {
         .attr('class', 'axis axis-right')
         .attr('transform', `translate(${width-margin.left-margin.right},0)`)
         .call(d3.axisLeft(y).ticks(3).tickFormat(format))
-
-    // var gradient = svg.append("linearGradient")
-    //     .attr("id", "chartGradient")
-    //     .attr("gradientTransform", "rotate(90)")
-    
-    // gradient.append("stop")
-    //     .attr("offset", "0%")
-    //     .attr("stop-color", "#43E0E410")
-
-    // gradient.append("stop")
-    //     .attr("offset", "100%")
-    //     .attr("stop-color", "#43E0E480")
-
-    // svg.append("path")
-    //     .datum(data)
-    //     .attr("fill", "url('#chartGradient')")
-    //     .attr("d", d3.area().curve(d3.curveStepAfter)
-    //         .x(d => x(d.date))
-    //         .y0(() => y(0))
-    //         .y1(d => y(d.value)))
 
     // Price projection line
     var lastX = x(data[data.length-1].date)
@@ -248,13 +246,21 @@ function drawChart(el, axis, tooltip, data) {
     <div>
         <div class="roundedBox flex flex-col">
             <div class="p-4 flex flex-row justify-between">
-                <div>
+                <div v-if="stream.isSale">
                     <div class="statLabel">Current Price</div>
-                    <div class="statValue">{{currentPrice}} {{stream.depositToken.symbol}}</div>
+                    <div class="statValue">{{format(currentPrice)}} {{stream.depositToken.symbol}}</div>
                 </div>
-                <div>
+                <div v-else>
+                    <div class="statLabel">Reward per {{stream.depositToken.symbol}}</div>
+                    <div class="statValue">{{currentPrice == 0 ? '--' : format(rewardPerToken)}} {{stream.rewardToken.symbol}}</div>
+                </div>
+                <div v-if="stream.isSale">
                     <div class="statLabel">Average Price</div>
-                    <div class="statValue">{{averagePrice}} {{stream.depositToken.symbol}}</div>
+                    <div class="statValue">{{format(averagePrice)}} {{stream.depositToken.symbol}}</div>
+                </div>
+                <div v-else>
+                    <div class="statLabel">Average Reward per {{stream.depositToken.symbol}}</div>
+                    <div class="statValue">{{format(averageRewardPerToken)}} {{stream.rewardToken.symbol}}</div>
                 </div>
                 <div>
                     <div class="statLabel">TVL</div>
