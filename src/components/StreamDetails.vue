@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import type { StreamData } from '@/composables/useStreamData'
-import { formatDate } from '@/lib/utils/format'
-import { DateTime } from 'luxon'
+import { formatDate, humanDuration } from '@/lib/utils/format'
+import { DateTime, Duration } from 'luxon'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 
 // Props
@@ -36,6 +36,13 @@ const secondsUntilStart = computed(() => {
     return Math.max(0, props.stream.streamParams.startTime
         - DateTime.now().toSeconds())
 })
+function getDepositLockDuration(stream) {
+    if (stream.isSale) return '∞'
+    let seconds = stream.streamParams.endDepositLock - stream.streamParams.endStream;
+    if (seconds == 0) return '--'
+    let duration = Duration.fromObject({seconds: seconds})
+    return humanDuration(duration).toUpperCase()
+}
 </script>
 
 <template>
@@ -83,6 +90,10 @@ const secondsUntilStart = computed(() => {
             <div>
                 <div class="statLabel">Stream End</div>
                 <div class="statValue">{{streamEnd}}</div>
+            </div>
+            <div v-if="!stream.isSale">
+                <div class="statLabel">Deposit Lock Duration</div>
+                <div class="statValue">{{getDepositLockDuration(stream)}}</div>
             </div>
         </div>
     </div>

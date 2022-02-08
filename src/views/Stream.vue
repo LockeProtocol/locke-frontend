@@ -9,6 +9,7 @@ import config from '@/lib/utils/config'
 import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import ClaimReward from '@/components/ClaimReward.vue'
+import ReclaimDeposit from '@/components/ReclaimDeposit.vue'
 import Chart from '@/components/Chart.vue'
 import PositionDetails from '@/components/PositionDetails.vue'
 import StreamDetails from '@/components/StreamDetails.vue'
@@ -68,6 +69,9 @@ watch(blockNumber, loadStream)
                         </div>
                         <Deposit v-show="depositTabActive" :stream="stream"/>
                         <Withdraw v-show="!depositTabActive" :stream="stream"/>
+                    </div>
+                    <div class="roundedBox" v-else-if="!stream.isSale">
+                        <ReclaimDeposit :stream="stream"/>
                     </div>
                     <div class="roundedBox">
                         <ClaimReward :stream="stream"/>

@@ -42,6 +42,10 @@ const estimatedPrice = computed(() => {
     return depositValue / estimatedReward.value
 })
 
+const estimatedRewardPerToken = computed(() => {
+    return 1 / estimatedPrice.value
+})
+
 const depositValueRaw = computed(() => {
     return parseUnits(depositAmount.value == '' ? '0' : depositAmount.value.toString(), props.stream.depositToken.decimals)
 })
@@ -117,12 +121,22 @@ watchEffect(() => blockNumber.value && load())
                 ? `${format(estimatedReward)} ${stream.rewardToken.symbol}` 
                 : '--'
             }}</p>
-            <p class="statLabel">Estimated Price:</p>
-            <p class="statValue text-right">{{
-                estimatedPrice > 0 ? 
-                `${format(estimatedPrice)} ${stream.depositToken.symbol}` 
-                : '--'
-            }}</p>
+            <template v-if="stream.isSale">
+                <p class="statLabel">Estimated Price:</p>
+                <p class="statValue text-right">{{
+                    estimatedPrice > 0 ? 
+                    `${format(estimatedPrice)} ${stream.depositToken.symbol}` 
+                    : '--'
+                }}</p>
+            </template>
+            <template v-else>
+                <p class="statLabel">Est. Reward per {{stream.depositToken.symbol}}:</p>
+                <p class="statValue text-right">{{
+                    estimatedRewardPerToken > 0 ? 
+                    `${format(estimatedRewardPerToken)} ${stream.rewardToken.symbol}` 
+                    : '--'
+                }}</p>
+            </template>
         </div>
         <div class="w-full cursor-pointer actionButton" @click="handleDeposit">{{depositButtonTxt}}</div>
         <ErrorBox :msg="errorText" @dismissed="errorText=''"/>
