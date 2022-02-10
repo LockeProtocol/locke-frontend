@@ -81,19 +81,16 @@ function drawChart(el, axis, tooltip, data) {
     // Set up x scale
     var streamStart = props.stream.streamParams.startTime
     var streamEnd = props.stream.streamParams.endStream
-    var timeElapsed = DateTime.now().toSeconds() - streamStart
-    var scaleEnd = Math.min(streamStart + timeElapsed * 1.5, streamEnd)
     var dataStart = d3.extent(data.map(d => d.date))[0]
     var xDomain = [dataStart, DateTime.fromSeconds(streamEnd).toJSDate()]
     var x = d3.scaleTime()
         .domain(xDomain)
         .range([ 0, width ]);
 
-
     // Set up y scale
     var yDomain = d3.extent(data.map(d => d.value))
-    yDomain[0] *= 0.95
-    yDomain[1] *= 1.05
+    yDomain[0] -= yDomain[1] * 0.05
+    yDomain[1] += yDomain[1] * 0.05
 
     var y = d3.scaleLinear()
         .domain(yDomain)
@@ -117,7 +114,6 @@ function drawChart(el, axis, tooltip, data) {
         .attr("height", "40")
         .attr('class', 'axis')
         .call(d3.axisBottom(x).ticks(4))
-
     svg.append("g")
         .attr('class', 'axis axis-right')
         .attr('transform', `translate(${width-margin.left-margin.right},0)`)
@@ -126,18 +122,33 @@ function drawChart(el, axis, tooltip, data) {
     // Price projection line
     var lastX = x(data[data.length-1].date)
     var lastY = y(data[data.length-1].value)
-    svg
-        .append('g')
-        .append('path')
-        .style("stroke", "#43E0E4")
-        .style("stroke-width", "0.5px")
-        .style("opacity", 0.8)
-        .style("pointer-events", "none")
-        .attr("d", function() {
-            var d = "M" + lastX + "," + lastY;
-                d += " " + width + "," + lastY;
-                return d;
-        })
+
+    if (lastX && lastY) {
+        svg
+            .append('g')
+            .append('path')
+            .style("stroke", "#43E0E4")
+            .style("stroke-width", "0.5px")
+            .style("opacity", 0.8)
+            .style("pointer-events", "none")
+            .attr("d", function() {
+                var d = "M" + lastX + "," + lastY;
+                    d += " " + width + "," + lastY;
+                    return d;
+            })
+
+        // If stream hasn't ended add the pulsing dot
+        if (DateTime.now() < xDomain[1]) {
+            svg.append('g')
+                .append('circle')
+                .attr('cx', lastX)
+                .attr('cy', lastY)
+                .attr('r', 4)
+                .attr('fill', '#43E0E4')
+                .attr('class', 'animate-ping')
+                .style('transform-origin', `${lastX}px ${lastY}px`)
+        }
+    }
         
     // Stream start line
     var streamStartX = x(DateTime.fromSeconds(streamStart).toJSDate())
@@ -163,9 +174,6 @@ function drawChart(el, axis, tooltip, data) {
         .style('fill', "#43E0E4")
         .style('opacity', 0.5)
         .text('START')
-
-
-
 
     // Mouseover / tooltip
     svg
@@ -236,7 +244,6 @@ function drawChart(el, axis, tooltip, data) {
         tip
             .selectAll('div')
             .html(`${d3.timeFormat("%b-%d %H:%M")(x0).toUpperCase()}<br/>${d3.format(",.2f")(value)} ${props.stream.depositToken.symbol}`)
-            //.html(`PRICE<br/>${d3.format(",.2f")(value)} ${props.stream.depositToken.symbol}`)
             .attr('fill', '#ffffff')
     }
 }

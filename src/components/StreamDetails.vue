@@ -73,7 +73,7 @@ function getDepositLockDuration(stream) {
                         v-slot="{ days, hours, minutes, seconds }">
                         {{ days }}:{{ hours }}:{{ minutes }}:{{ seconds }}
                     </vue-countdown>
-                    <vue-countdown 
+                    <vue-countdown style="color: #43E0E4a0"
                         v-else-if="secondsRemaining > 0" 
                         :time="secondsRemaining * 1000" 
                         :transform="transformSlotProps" 
