@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, watchEffect } from 'vue'
+import { computed, watchEffect, ref } from 'vue'
 import { DateTime, Duration } from 'luxon'
 import _ from 'lodash'
 import useStreamList from '@/composables/useStreamList'
@@ -10,29 +10,54 @@ import WrongNetwork from '@/components/WrongNetwork.vue'
 import Loading from '@/components/Loading.vue'
 import { format, humanDuration } from '@/lib/utils/format'
 import config from '@/lib/utils/config'
+import { Dropdown, DropdownContent, DropdownItem } from '@/components/Dropdown'
 
+// Refs
 const { account, chainId, walletState } = useWeb3()
 const router = useRouter()
 const { data: streamList, loaded, load } = useStreamList(config.factory)
+const sortField = ref('streamParams.startTime')
+const sortDirection = ref('desc')
+const filter = ref('')
+
+// Computed
 const connected = computed(() => !!account.value && chainId.value == config.chainId)
 const streams = computed(() => _(streamList.value ?? [])
-    .orderBy(['streamParams.endStream'], ['desc'])
     .filter((s) => s.streamParams.endStream > DateTime.fromISO('2022-02-08T12:08:00').toSeconds())
+    .orderBy(sortField.value, sortDirection.value)
+    .filter(s => filter.value == '' || getStreamStatus(s) == filter.value)
     .value()
 )
 
+// Helpers
 function getStreamStatus(stream) {
     return DateTime.now().toSeconds() > stream.streamParams.endStream ? 'completed' 
         : DateTime.now().toSeconds() > stream.streamParams.startTime ? 'active' 
         : 'upcoming'
 }
-
-function getDepositLockDuration(stream) {
+function formatDepositLockDuration(stream) {
     if (stream.isSale) return '∞'
     let seconds = stream.streamParams.endDepositLock - stream.streamParams.endStream;
     if (seconds == 0) return '--'
     let duration = Duration.fromObject({seconds: seconds})
     return humanDuration(duration).toUpperCase()
+}
+
+// Handlers
+function sortChanged(val) {
+    if (val == 'oldestFirst') {
+        sortField.value = 'streamParams.startTime'
+        sortDirection.value = 'asc'
+    } else if (val == 'newestFirst') {
+        sortField.value = 'streamParams.startTime'
+        sortDirection.value = 'desc'
+    } else {
+        sortField.value = 'streamParams.startTime'
+        sortDirection.value = 'desc'
+    }
+}
+function filterChanged(val) {
+    filter.value = val
 }
 
 watchEffect(() => connected.value && load())
@@ -47,8 +72,25 @@ watchEffect(() => connected.value && load())
         </div>
         <div class="py-10 mx-5 lg:mx-auto lg:container lg:max-w-screen-lg" v-if="connected && loaded">
             <div class="flex flex-row p-4 my-4 justify-end gap-4">
-                <div class="dropdown">SORT</div>
-                <div class="dropdown">FILTER</div>
+                <Dropdown @selectionChanged="sortChanged">
+                    <template #toggler>
+                        <div class="dropdown">SORT</div>
+                    </template>
+                    <DropdownContent>
+                        <DropdownItem :val="'newestFirst'">NEWEST FIRST</DropdownItem>
+                        <DropdownItem :val="'oldestFirst'">OLDEST FIRST</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
+                <Dropdown @selectionChanged="filterChanged">
+                    <template #toggler>
+                        <div class="dropdown">FILTER</div>
+                    </template>
+                    <DropdownContent>
+                        <DropdownItem :val="'active'">ACTIVE</DropdownItem>
+                        <DropdownItem :val="'upcoming'">UPCOMING</DropdownItem>
+                        <DropdownItem :val="'completed'">COMPLETED</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
             </div>
             <div v-for="stream in streams" :key="stream" class="flex flex-row p-4 row cursor-pointer my-4" @click="router.push({name: 'Stream', params: {address: stream.address}})">
                 <div style="flex-basis: 20%">
@@ -66,7 +108,7 @@ watchEffect(() => connected.value && load())
                 </div>
                 <div style="flex-basis: 20%">
                     <div class="statLabel">Lock Duration</div>
-                    <div class="statValue">{{getDepositLockDuration(stream)}}</div>
+                    <div class="statValue">{{formatDepositLockDuration(stream)}}</div>
                 </div>
                 <div style="flex-basis: 20%">
                     <div class="statLabel">Stream Start / End</div>
@@ -102,7 +144,7 @@ watchEffect(() => connected.value && load())
     padding-right: 5px;
     padding-top: 2px;
     padding-bottom: 2px;
-
+    cursor: pointer;
 }
 
 .status.active, .status.upcoming {
