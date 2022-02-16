@@ -7,6 +7,7 @@ import { Contract } from '@ethersproject/contracts'
 import _ from 'lodash'
 import { BigNumber } from '@ethersproject/bignumber'
 import config from '@/lib/utils/config'
+import usePrice from '@/composables/usePrice'
 
 export type StreamData = {
     address: any,
@@ -106,12 +107,14 @@ export default function useStreamData(address: string, web3=null as any) {
             call(erc20, [token, 'decimals']),
             call(erc20, [token, 'symbol']),
             call(erc20, [token, 'name']),
+            getPrice(token)
         ])
         return {
             address: token,
             decimals: results[0],
             symbol: results[1],
-            name: results[2]
+            name: results[2],
+            priceUSD: results[3]
         }
     }
 
@@ -136,6 +139,12 @@ export default function useStreamData(address: string, web3=null as any) {
         let claims = claimEvents.map((c) => c.args?.amount)
         let totalClaims = _.reduce(claims, (sum, n) => sum.add(n), BigNumber.from(0))
         return totalClaims
+    }
+
+    async function getPrice(address: string) {
+        const { priceUSD, load } = usePrice(address)
+        await load()
+        return priceUSD.value
     }
 
     return {
