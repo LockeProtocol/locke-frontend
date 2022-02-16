@@ -34,6 +34,28 @@ const rewardPerTokenEnd = computed(() => {
 const streamEnded = computed(() => {
     return DateTime.now().toSeconds() > props.stream.streamParams.endStream
 })
+const estimatedAPRNow = computed(() => {
+    let rewardPrice = props.stream.rewardToken.priceUSD
+    let depositPrice = props.stream.depositToken.priceUSD
+    if (rewardPrice == 0 || depositPrice == 0) return NaN
+
+    let duration = props.stream.streamParams.endDepositLock - props.stream.streamParams.endStream
+    let secondsPerYear = 60*60*24*365
+    let rewardUSD = rewardsEarnedNow.value * rewardPrice
+    let depositUSD = tokensLockedNow.value * depositPrice
+    return (rewardUSD / depositUSD) * (secondsPerYear / duration)
+})
+const estimatedAPREnd = computed(() => {
+    let rewardPrice = props.stream.rewardToken.priceUSD
+    let depositPrice = props.stream.depositToken.priceUSD
+    if (rewardPrice == 0 || depositPrice == 0) return NaN
+
+    let duration = props.stream.streamParams.endDepositLock - props.stream.streamParams.endStream
+    let secondsPerYear = 60*60*24*365
+    let rewardUSD = rewardsEarnedEnd.value * rewardPrice
+    let depositUSD = tokensLockedEnd.value * depositPrice
+    return (rewardUSD / depositUSD) * (secondsPerYear / duration)
+})
 
 
 </script>
@@ -60,6 +82,9 @@ const streamEnded = computed(() => {
                 <div class="statLabel text-left">Reward per {{stream.depositToken.symbol}}:</div>
                 <div class="statValue" :class="{invisible: streamEnded}">{{format(rewardPerTokenNow)}} {{stream.rewardToken.symbol}}</div>
                 <div class="statValue ">{{format(rewardPerTokenEnd)}} {{stream.rewardToken.symbol}}</div>
+                <div class="statLabel text-left">Est. APR:</div>
+                <div class="statValue" :class="{invisible: streamEnded}">{{format(estimatedAPRNow * 100)}}{{estimatedAPRNow ? '%' : ''}}</div>
+                <div class="statValue ">{{format(estimatedAPREnd * 100)}}{{estimatedAPREnd ? '%' : ''}}</div>
             </template>
         </div>
     </div>
