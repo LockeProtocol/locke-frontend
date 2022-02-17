@@ -37,6 +37,16 @@ const exitButtonText = computed(() => {
         return 'EXIT'
     }
 })
+const estimatedPrice = computed(() => {
+    if (withdrawAmount.value == '') return NaN
+    let withdrawAmt = parseFloat(withdrawAmount.value)
+    let unstreamed = props.stream.depositTokenUnstreamed
+    let remainingReward = props.stream.rewardTokenRemaining
+    return (unstreamed - withdrawAmt) / remainingReward
+})
+const estimatedRewardPerToken = computed(() => {
+    return 1 / estimatedPrice.value
+})
 
 // Handlers
 const handleWithdraw = async () => {
@@ -94,6 +104,14 @@ const dismissError = () => {
             <p class="statValue text-right">{{format(stream.userState?.netDeposits - stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
             <p class="statLabel">Tokens Withdrawable:</p>
             <p class="statValue text-right">{{format(stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
+            <template v-if="stream.isSale">
+                <p class="statLabel">Estimated Price:</p>
+                <p class="statValue text-right">{{withdrawAmount != '' ? `${format(estimatedPrice)} ${stream.depositToken.symbol}` : '--'}}</p>
+            </template>
+            <template v-else>
+                <p class="statLabel">Est. Reward Per {{stream.depositToken.symbol}}:</p>
+                <p class="statValue text-right">{{withdrawAmount != '' ? `${format(estimatedRewardPerToken)} ${stream.rewardToken.symbol}` : '--'}}</p>
+            </template>
         </div>
         <div class="grid grid-cols-2 gap-4">
             <div class="w-full cursor-pointer actionButton" @click="handleWithdraw">{{withdrawButtonText}}</div>
