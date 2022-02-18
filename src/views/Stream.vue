@@ -47,7 +47,9 @@ watch(blockNumber, loadStream)
             <div class="grid grid-cols-1 lg:grid-cols-2">
                 <div class="flex flex-col gap-10">
                     <h2>{{stream.depositToken.symbol}} / {{stream.rewardToken.symbol}}</h2>
-                    <p>Deposit {{stream.depositToken.symbol}} to earn {{stream.rewardToken.symbol}} over time. Rewards are earned continuously and distributed pro rata to all depositors.</p>
+                    <p>Deposit {{stream.depositToken.symbol}} to earn {{stream.rewardToken.symbol}} over time. 
+                        Rewards are earned continuously and distributed pro-rata to all depositors. Deposits
+                        are locked over time. Locked deposits can not be withdrawn.</p>
                     <StreamDetails :stream="stream"/>
                     <Chart :stream="stream"/>
                 </div>
