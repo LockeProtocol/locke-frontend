@@ -6,6 +6,7 @@ import streamABI from '@/lib/abi/stream-abi.json'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { format } from '@/lib/utils/format'
 import ErrorBox from '@/components/ErrorBox.vue'
+import InfoBox from '@/components/InfoBox.vue'
 
 // Props
 const props = defineProps<{
@@ -42,6 +43,7 @@ const estimatedPrice = computed(() => {
     let withdrawAmt = parseFloat(withdrawAmount.value)
     let unstreamed = props.stream.depositTokenUnstreamed
     let remainingReward = props.stream.rewardTokenRemaining
+    if (unstreamed < withdrawAmt) return NaN
     return (unstreamed - withdrawAmt) / remainingReward
 })
 const estimatedRewardPerToken = computed(() => {
@@ -98,14 +100,14 @@ const dismissError = () => {
         <h2>WITHDRAW {{stream.depositToken.symbol}}</h2>
         <input type="number" placeholder="0" class="textBox outline-none p-3 w-full mb-4" v-model="withdrawAmount"/>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
-            <p class="statLabel">Net Deposits:</p>
+            <p class="statLabel">Net Deposits: <info-box message="Your total deposits less your total withdrawals"/></p>
             <p class="statValue text-right">{{format(stream.userState?.netDeposits)}} {{stream.depositToken.symbol}}</p>
-            <p class="statLabel">Tokens Streamed:</p>
+            <p class="statLabel">Tokens Locked: <info-box message="The number of tokens you’ve deposited that can no longer be withdrawn"/></p>
             <p class="statValue text-right">{{format(stream.userState?.netDeposits - stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
-            <p class="statLabel">Tokens Withdrawable:</p>
+            <p class="statLabel">Tokens Withdrawable: <info-box message="The number of tokens you’ve deposited that are still eligible to be withdrawn. This value decreases in real time; use EXIT to withdraw the maximum amount."/></p>
             <p class="statValue text-right">{{format(stream.userState?.tokens)}} {{stream.depositToken.symbol}}</p>
             <template v-if="stream.isSale">
-                <p class="statLabel">Estimated Price:</p>
+                <p class="statLabel">Estimated Price: <info-box message="The estimated auction price AFTER your tokens have been withdrawn"/></p>
                 <p class="statValue text-right">{{withdrawAmount != '' ? `${format(estimatedPrice)} ${stream.depositToken.symbol}` : '--'}}</p>
             </template>
             <template v-else>

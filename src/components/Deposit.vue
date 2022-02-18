@@ -9,6 +9,7 @@ import { parseUnits, formatUnits } from '@ethersproject/units'
 import { format, roundBN } from '@/lib/utils/format'
 import useBlockNumber from '@/composables/useBlockNumber'
 import ErrorBox from '@/components/ErrorBox.vue'
+import InfoBox from '@/components/InfoBox.vue'
 
 // Props
 const props = defineProps<{
@@ -138,14 +139,14 @@ watchEffect(() => blockNumber.value && load())
             <div class="statValue text-right cursor-pointer" @click="handleMax">Max: {{maxDisplay}}</div>
         </div>
         <div class="grid grid-cols-2 m-2 mb-6 gap-2">
-            <p class="statLabel">Estimated Reward:</p>
+            <p class="statLabel">Estimated Reward: <info-box :message="`The estimated number of ${stream.depositToken.symbol} tokens you will have earned by the end of the auction`"/></p>
             <p class="statValue text-right">{{
                 estimatedReward > 0 
                 ? `${format(estimatedReward)} ${stream.rewardToken.symbol}` 
                 : '--'
             }}</p>
             <template v-if="stream.isSale">
-                <p class="statLabel">Estimated Price:</p>
+                <p class="statLabel">Estimated Price: <info-box message="The price of the auction AFTER your deposit is processed"/></p>
                 <p class="statValue text-right">{{
                     estimatedPrice > 0 ? 
                     `${format(estimatedPrice)} ${stream.depositToken.symbol}` 

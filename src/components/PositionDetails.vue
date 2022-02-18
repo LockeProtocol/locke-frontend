@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { StreamData } from '@/composables/useStreamData'
 import { format } from '@/lib/utils/format'
 import { DateTime } from 'luxon'
+import InfoBox from '@/components/InfoBox.vue'
 
 // Props
 const props = defineProps<{
@@ -63,18 +64,19 @@ const estimatedAPREnd = computed(() => {
 <template>
     <div class="p-8">
         <h2>YOUR POSITION</h2>
-        <div class="grid grid-cols-3 gap-2 text-right">
+        <div class="grid grid-cols-3 gap-y-2 text-right">
             <div></div>
             <div class="statLabel" :class="{invisible: streamEnded}">Now</div>
-            <div class="statLabel" :class="{invisible: streamEnded}">Est. Total</div>
-            <div class="statLabel text-left">Tokens Locked:</div>
+            <div class="statLabel" :class="{invisible: streamEnded}">Est. Total  <info-box message="Estimated values at the end of the auction that assume the average price remains constant."/></div>
+            <div class="statLabel text-left">Tokens Locked: <info-box message="The number of tokens you’ve deposited that can no longer be withdrawn"/></div>
             <div class="statValue" :class="{invisible: streamEnded}">{{format(tokensLockedNow)}} {{stream.depositToken.symbol}}</div>
             <div class="statValue">{{format(tokensLockedEnd)}} {{stream.depositToken.symbol}}</div>
-            <div class="statLabel text-left">Rewards Earned:</div>
+            <div class="statLabel text-left">Rewards Earned: <info-box message="The number of reward tokens you’ve earned in exchange for your locked deposit tokens"/></div>
             <div class="statValue" :class="{invisible: streamEnded}">{{format(rewardsEarnedNow)}} {{stream.rewardToken.symbol}}</div>
             <div class="statValue">{{format(rewardsEarnedEnd)}} {{stream.rewardToken.symbol}}</div>
             <template v-if="stream.isSale">
-                <div class="statLabel text-left">Avg. Price:</div>
+                <div class="statLabel text-left">Avg. Price: <info-box message="Average price is calculated as: rewards earned / tokens locked
+"/></div>
                 <div class="statValue" :class="{invisible: streamEnded}">{{format(avgPriceNow)}} {{stream.depositToken.symbol}}</div>
                 <div class="statValue">{{format(avgPriceEnd)}} {{stream.depositToken.symbol}}</div>
             </template>

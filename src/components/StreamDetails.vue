@@ -4,6 +4,7 @@ import type { StreamData } from '@/composables/useStreamData'
 import { formatDate, humanDuration } from '@/lib/utils/format'
 import { DateTime, Duration } from 'luxon'
 import VueCountdown from '@chenfengyuan/vue-countdown'
+import InfoBox from '@/components/InfoBox.vue'
 
 // Props
 const props = defineProps<{
@@ -57,7 +58,7 @@ function getDepositLockDuration(stream) {
                 <div class="cursor-pointer statValue">{{stream.rewardToken.symbol}} →</div>
             </div>
             <div>
-                <div class="statLabel">Total Reward</div>
+                <div class="statLabel">Total Reward <info-box message="The total amount of rewards that will be distributed pro-rata to all depositors"/></div>
                 <div class="statValue">{{totalReward}} {{stream.rewardToken.symbol}}</div>
             </div>
             <div>
