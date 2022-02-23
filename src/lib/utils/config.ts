@@ -1,6 +1,6 @@
 export default  {
-    chainId: 10243,
-    networkName: 'Locke Testnet',
-    factory: '0x104C0f26f91Fa6758F4a64E8C64dd409a9ea4151',
-    lens: '0xe2C5daaC7104dc097c1AE0dFE6A09Ff14efFd49A'
+    chainId: 42,
+    networkName: 'Kovan Testnet',
+    factory: '0x7512d9365F9e55b6499070B899247C3b9BaDb426',
+    lens: '0xD4AcE128264b70fe1804e372bBa3878664B1489B'
 }
