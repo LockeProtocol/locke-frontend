@@ -1,9 +1,10 @@
 import { Connector } from '../connector';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { MetamaskError } from '@/types';
+import config from '@/lib/utils/config'
 
-const NETWORK_ID = 1;
-const RPC_URL = "";
+const NETWORK_ID = config.chainId;
+const RPC_URL = config.walletConnectRPC;
 
 export class WalletConnectConnector extends Connector {
   id = 'walletconnect';
@@ -11,9 +12,11 @@ export class WalletConnectConnector extends Connector {
     const provider = new WalletConnectProvider({
       rpc: {
         [NETWORK_ID]: RPC_URL
-      }
+      },
+      chainId: NETWORK_ID
     });
     this.provider = provider;
+    console.log(provider)
 
     try {
       const accounts = await provider.enable();

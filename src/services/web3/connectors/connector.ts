@@ -41,13 +41,14 @@ export abstract class Connector {
       }
       this.account.value = getAddress(accounts[0]);
     }
+    console.log(accounts)
   };
 
   handleChainChanged = chainId => {
     this.chainId.value = Number(chainId);
   };
 
-  handleDisconnect = () => {
+  handleDisconnect = async () => {
     // reset everything
     if (this.provider?.removeAllListeners) this.provider?.removeAllListeners();
     this.account.value = null;

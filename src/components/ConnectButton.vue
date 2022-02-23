@@ -3,13 +3,13 @@ import { computed } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import config from '@/lib/utils/config'
 
-const {account, connectWallet, chainId } = useWeb3()
+const {account, connectWallet, disconnectWallet, chainId } = useWeb3()
 
 // Computed Propertied
 const connected = computed(() => !!account.value && chainId.value == config.chainId)
 const connectBtnText = computed(() => {
     const address = account.value.toString()
-    if (connected.value && address && address.length === 42) {
+    if (address && address.length === 42) {
         const str1 = String(address).slice(2, 6).toUpperCase();
         const str2 = String(address).slice(address.length - 4, address.length).toUpperCase();
         return `0x${str1}…${str2}`;
@@ -20,8 +20,12 @@ const connectBtnText = computed(() => {
 
 // Methods
 function handleConnect() {
-    if (!connected.value) {
+    if (!account.value) {
+        console.log(account)
         connectWallet('metamask')
+    } else {
+      console.log('disconnecting')
+      disconnectWallet()
     }
 }
 
@@ -30,6 +34,7 @@ function handleConnect() {
 <template>
   <div role="button" id="wallet-button" @click="handleConnect">
     <div v-if="connected" id="dot"></div>
+    <div v-if="account && !connected" id="reddot"></div>
     {{ connectBtnText }}
   </div>
 </template>
@@ -54,5 +59,12 @@ function handleConnect() {
   border-radius: 4px;
   margin-right: 8px;
   background: #43E0E4;
+}
+#reddot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  background: #E84142;
 }
 </style>
