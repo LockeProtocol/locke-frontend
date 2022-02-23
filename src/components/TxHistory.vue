@@ -8,6 +8,7 @@ import { formatAddress, roundBN } from '@/lib/utils/format'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { DateTime } from 'luxon'
 import _ from 'lodash'
+import config from '@/lib/utils/config'
 
 // Props
 const props = defineProps<{
@@ -68,7 +69,10 @@ watch(blockNumber, () => { loadEvents(props.stream) })
             <div style="flex-basis: 20%">
                 <div class="statLabel">Transaction</div>
                 <div class="stat-value-small">
-                    {{event.txhash.substr(0,14).toUpperCase()}}… →
+                    <a :href="`${config.blockExplorerPrefix}/tx/${event.txhash}`"
+                        target="_blank">
+                        {{event.txhash.substr(0,14).toUpperCase()}}… →
+                    </a>
                 </div>
             </div>
             <div style="flex-basis: 20%">
@@ -86,7 +90,10 @@ watch(blockNumber, () => { loadEvents(props.stream) })
             <div  class="hidden md:block" style="flex-basis: 20%">
                 <div class="statLabel">User</div>
                 <div class="stat-value-small">
-                    {{formatAddress(event.account)}} →
+                    <a :href="`${config.blockExplorerPrefix}/address/${event.account}`" 
+                        target="_blank">
+                        {{formatAddress(event.account)}} →
+                    </a>
                 </div>
             </div>
         </div>
