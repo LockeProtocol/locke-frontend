@@ -6,7 +6,7 @@ import erc20 from '@/lib/abi/erc20-abi.json'
 import { Contract } from '@ethersproject/contracts'
 import _ from 'lodash'
 import { BigNumber } from '@ethersproject/bignumber'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 import usePrice from '@/composables/usePrice'
 
 export type StreamData = {
@@ -24,7 +24,7 @@ export type StreamData = {
 
 export default function useStreamData(address: string, web3=null as any) {
 
-    const lensAddress = config.lens
+    const lensAddress = config.value.lens
     let account, call, getProvider
     if (web3) {
         ({account, call, getProvider} = web3)

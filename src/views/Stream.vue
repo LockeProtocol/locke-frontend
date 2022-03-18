@@ -5,7 +5,7 @@ import useStreamData from '@/composables/useStreamData'
 import { DateTime } from 'luxon'
 import useBlockNumber from '@/composables/useBlockNumber'
 import { useRoute } from 'vue-router'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 import Deposit from '@/components/Deposit.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import ClaimReward from '@/components/ClaimReward.vue'
@@ -20,7 +20,7 @@ import Loading from '@/components/Loading.vue'
 
 const { account, chainId, walletState } = useWeb3()
 const { blockNumber } = useBlockNumber()
-const connected = computed(() => !!account.value && chainId.value == config.chainId)
+const connected = computed(() => !!account.value && chainId.value == config.value.chainId)
 const route = useRoute()
 const { data: stream, load: loadStream, loaded } = useStreamData(route.params.address)
 const streamActive = computed(() => stream.streamParams.endStream > DateTime.now().toSeconds())

@@ -9,19 +9,19 @@ import NotConnected from '@/components/NotConnected.vue'
 import WrongNetwork from '@/components/WrongNetwork.vue'
 import Loading from '@/components/Loading.vue'
 import { format, humanDuration } from '@/lib/utils/format'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 import { Dropdown, DropdownContent, DropdownItem } from '@/components/Dropdown'
 
 // Refs
 const { account, chainId, walletState } = useWeb3()
 const router = useRouter()
-const { data: streamList, loaded, load } = useStreamList(config.factory)
+const { data: streamList, loaded, load } = useStreamList()
 const sortField = ref('streamParams.startTime')
 const sortDirection = ref('desc')
 const filter = ref('')
 
 // Computed
-const connected = computed(() => !!account.value && chainId.value == config.chainId)
+const connected = computed(() => !!account.value && chainId.value == config.value.chainId)
 const streams = computed(() => _(streamList.value ?? [])
     .orderBy(sortField.value, sortDirection.value)
     .filter(s => filter.value == '' || getStreamStatus(s) == filter.value)
@@ -76,8 +76,8 @@ watchEffect(() => connected.value && load())
                         <div class="dropdown">SORT</div>
                     </template>
                     <DropdownContent>
-                        <DropdownItem :val="'newestFirst'">NEWEST FIRST</DropdownItem>
-                        <DropdownItem :val="'oldestFirst'">OLDEST FIRST</DropdownItem>
+                        <DropdownItem :val="'newestFirst'" :toggleAble="true">NEWEST FIRST</DropdownItem>
+                        <DropdownItem :val="'oldestFirst'" :toggleAble="true">OLDEST FIRST</DropdownItem>
                     </DropdownContent>
                 </Dropdown>
                 <Dropdown @selectionChanged="filterChanged">
@@ -85,9 +85,9 @@ watchEffect(() => connected.value && load())
                         <div class="dropdown">FILTER</div>
                     </template>
                     <DropdownContent>
-                        <DropdownItem :val="'active'">ACTIVE</DropdownItem>
-                        <DropdownItem :val="'upcoming'">UPCOMING</DropdownItem>
-                        <DropdownItem :val="'completed'">COMPLETED</DropdownItem>
+                        <DropdownItem :val="'active'" :toggleAble="true">ACTIVE</DropdownItem>
+                        <DropdownItem :val="'upcoming'" :toggleAble="true">UPCOMING</DropdownItem>
+                        <DropdownItem :val="'completed'" :toggleAble="true">COMPLETED</DropdownItem>
                     </DropdownContent>
                 </Dropdown>
             </div>

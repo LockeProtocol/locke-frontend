@@ -5,8 +5,9 @@ import { Contract } from '@ethersproject/contracts'
 import _ from 'lodash'
 import { BigNumber } from '@ethersproject/bignumber'
 import useStreamData from '@/composables/useStreamData'
+import { config } from '@/lib/utils/config'
 
-export default function useStreamList(factory: string) {
+export default function useStreamList() {
 
     const data = ref<any[]>()
     const loaded = ref(false)
@@ -15,7 +16,7 @@ export default function useStreamList(factory: string) {
     async function load() {
 
         loaded.value = false
-        let contract = new Contract(factory, streamFactoryABI, getProvider())
+        let contract = new Contract(config.value.factory, streamFactoryABI, getProvider())
         let streamCreatedFilter = contract.filters.StreamCreated()
         let streamCreated = await contract.queryFilter(streamCreatedFilter)
         let streams = streamCreated.map((s) => s.args?.stream_addr)

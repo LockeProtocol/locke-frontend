@@ -1,6 +1,6 @@
 <script setup>
 import useWeb3 from '@/services/web3/useWeb3'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 
 const { connectWallet, walletState, account, chainId } = useWeb3()
 </script>

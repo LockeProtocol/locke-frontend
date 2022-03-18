@@ -3,18 +3,19 @@ import { inject, computed } from 'vue'
 const sharedState = inject('dropdownState') as any
 
 const props = defineProps<{
-  val: string
+  val: string,
+  toggleAble?: boolean
 }>()
 
 const selected = computed(() => props.val == sharedState.selected)
 const handleSelected = () => {
-    if (sharedState.selected == props.val) sharedState.selected = ''
+    if (props.toggleAble && sharedState.selected == props.val) sharedState.selected = ''
     else sharedState.selected = props.val
 }
 
 </script>
 <template>
-  <a href="#" @click="handleSelected" class="block my-1 px-4 py-1" :class="{'selected': selected}">
+  <a href="#" @click="handleSelected" class="block my-1 px-4 py-1" :class="{'selected': (selected && toggleAble)}">
     <slot/>
   </a>
 </template>

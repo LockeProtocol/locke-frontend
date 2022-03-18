@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 const { connectWallet, isWalletSelectVisible } = useWeb3()
 
 function selectWallet(wallet) {
