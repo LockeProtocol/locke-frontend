@@ -9,9 +9,9 @@ export default function usePrice(address: string) {
     const load = async () => {
         loaded.value = false
         try {
-            let result = await axios.get(`${url}${address}`)
-            priceUSD.value = result?.data?.market_data?.current_price?.usd ?? 0
-            console.log(priceUSD)
+            // let result = await axios.get(`${url}${address}`)
+            // priceUSD.value = result?.data?.market_data?.current_price?.usd ?? 0
+            // console.log(priceUSD)
         } catch (e) {
             //console.log(e)
         }
