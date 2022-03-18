@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
 import config from '@/lib/utils/config'
 
-const {account, connectWallet, disconnectWallet, chainId } = useWeb3()
+const {account, disconnectWallet, chainId, isWalletSelectVisible } = useWeb3()
+const modalVisible = ref(false)
 
 // Computed Propertied
 const connected = computed(() => !!account.value && chainId.value == config.chainId)
@@ -21,8 +22,7 @@ const connectBtnText = computed(() => {
 // Methods
 function handleConnect() {
     if (!account.value) {
-        console.log(account)
-        connectWallet('metamask')
+        isWalletSelectVisible.value = true
     } else {
       console.log('disconnecting')
       disconnectWallet()
@@ -67,4 +67,5 @@ function handleConnect() {
   margin-right: 8px;
   background: #E84142;
 }
+
 </style>

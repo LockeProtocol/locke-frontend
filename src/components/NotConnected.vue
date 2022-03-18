@@ -1,7 +1,7 @@
 <script setup>
 import useWeb3 from '@/services/web3/useWeb3'
 
-const { connectWallet, walletState, account } = useWeb3()
+const { isWalletSelectVisible, walletState, account } = useWeb3()
 </script>
 
 <template>
@@ -9,6 +9,6 @@ const { connectWallet, walletState, account } = useWeb3()
         <h2>NOT CONNECTED</h2>
         <p>Please connect your wallet to continue.</p>
         <p>{{walletState}}</p>
-        <div class="actionButton mt-10 cursor-pointer" @click="connectWallet('walletconnect')">CONNECT</div>
+        <div class="actionButton mt-10 cursor-pointer" @click="isWalletSelectVisible=true">CONNECT</div>
     </div>
 </template>
