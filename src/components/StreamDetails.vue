@@ -5,6 +5,7 @@ import { formatDate, humanDuration } from '@/lib/utils/format'
 import { DateTime, Duration } from 'luxon'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import InfoBox from '@/components/InfoBox.vue'
+import config from '@/lib/utils/config'
 
 // Props
 const props = defineProps<{
@@ -51,11 +52,21 @@ function getDepositLockDuration(stream) {
         <div class="grid grid-cols-2" id="statsBox">
             <div>
                 <div class="statLabel">Deposit Token</div>
-                <div class="cursor-pointer statValue">{{stream.depositToken.symbol}} →</div>
+                <div class="statValue">
+                    <a :href="`${config.blockExplorerPrefix}/address/${stream.depositToken.address}`"
+                        target="_blank">
+                        {{stream.depositToken.symbol}} →
+                    </a>
+                </div>
             </div>
             <div>
                 <div class="statLabel">Reward Token</div>
-                <div class="cursor-pointer statValue">{{stream.rewardToken.symbol}} →</div>
+                <div class="statValue">
+                    <a :href="`${config.blockExplorerPrefix}/address/${stream.rewardToken.address}`"
+                        target="_blank">
+                        {{stream.rewardToken.symbol}} →
+                    </a>
+                </div>
             </div>
             <div>
                 <div class="statLabel">Total Reward <info-box message="The total amount of rewards that will be distributed pro-rata to all depositors"/></div>
