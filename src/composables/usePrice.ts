@@ -13,7 +13,7 @@ export default function usePrice(address: string) {
             priceUSD.value = result?.data?.market_data?.current_price?.usd ?? 0
             console.log(priceUSD)
         } catch (e) {
-            console.log(e)
+            //console.log(e)
         }
         
     }

@@ -1,6 +1,7 @@
 <script setup>
 import ConnectButton from '@/components/ConnectButton.vue'
 import logo from '@/assets/images/locke-logo.svg'
+import WalletSelect from '@/components/WalletSelect.vue'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import logo from '@/assets/images/locke-logo.svg'
         <div id="logo" class="ml-12"><img :src="logo"></div>
         <ConnectButton class="mr-12"/>
     </div>
+    <WalletSelect/>
 </template>
 
 <style scoped>
