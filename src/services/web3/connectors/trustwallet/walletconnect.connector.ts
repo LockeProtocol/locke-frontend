@@ -1,10 +1,10 @@
 import { Connector } from '../connector';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { MetamaskError } from '@/types';
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 
-const NETWORK_ID = config.chainId;
-const RPC_URL = config.walletConnectRPC;
+const NETWORK_ID = config.value.chainId;
+const RPC_URL = config.value.walletConnectRPC;
 
 export class WalletConnectConnector extends Connector {
   id = 'walletconnect';

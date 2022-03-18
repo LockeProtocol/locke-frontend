@@ -5,7 +5,7 @@ import { formatDate, humanDuration } from '@/lib/utils/format'
 import { DateTime, Duration } from 'luxon'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 import InfoBox from '@/components/InfoBox.vue'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 
 // Props
 const props = defineProps<{

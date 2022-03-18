@@ -1,13 +1,13 @@
 <script setup>
 import { computed, ref } from 'vue'
 import useWeb3 from '@/services/web3/useWeb3'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 
 const {account, disconnectWallet, chainId, isWalletSelectVisible } = useWeb3()
 const modalVisible = ref(false)
 
 // Computed Propertied
-const connected = computed(() => !!account.value && chainId.value == config.chainId)
+const connected = computed(() => !!account.value && chainId.value == config.value.chainId)
 const connectBtnText = computed(() => {
     const address = account.value.toString()
     if (address && address.length === 42) {

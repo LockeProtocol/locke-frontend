@@ -8,7 +8,7 @@ import { formatAddress, roundBN } from '@/lib/utils/format'
 import { parseUnits, formatUnits } from '@ethersproject/units'
 import { DateTime } from 'luxon'
 import _ from 'lodash'
-import config from '@/lib/utils/config'
+import { config } from '@/lib/utils/config'
 
 // Props
 const props = defineProps<{
